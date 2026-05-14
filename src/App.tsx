@@ -107,58 +107,58 @@ function Hero() {
   return (
     <section id="home" className="pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden relative">
       {/* Decorative blobs */}
-      <div className="absolute top-20 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 left-10 w-72 h-72 bg-orange-300/10 rounded-full blur-3xl -z-10" />
+      <div className="absolute top-20 right-0 w-80 h-80 bg-primary/10 rounded-full blur-[120px] -z-10" />
+      <div className="absolute bottom-0 left-10 w-96 h-96 bg-orange-300/10 rounded-full blur-[120px] -z-10" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="max-w-2xl"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-primary font-medium text-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-primary font-bold text-xs uppercase tracking-widest mb-8 border border-orange-200">
             <span className="flex h-2 w-2 rounded-full bg-primary opacity-75 animate-ping"></span>
-            More than Faster
+            Culinary Excellence
           </div>
-          <h1 className="text-5xl lg:text-7xl font-serif font-medium leading-tight mb-6 text-ink">
-            Be The Fastest In Delivering Your <span className="text-primary italic">Food</span>
+          <h1 className="text-6xl lg:text-8xl font-serif font-bold leading-[1.05] mb-8 text-ink">
+            Elevate Your <span className="text-primary italic">Palate</span> with Every Bite
           </h1>
-          <p className="text-lg text-ink/70 mb-8 max-w-lg leading-relaxed">
-            Our job is to filling your tummy with delicious food and with fast and free delivery. 
-            Fresh food from our kitchen straight to your table.
+          <p className="text-xl text-ink/60 mb-10 max-w-lg leading-relaxed font-medium">
+            Experience the art of fine dining delivered to your doorstep. Fresh ingredients, master chefs, and a passion for perfection.
           </p>
           
-          <div className="flex flex-wrap items-center gap-4">
-            <button className="bg-primary hover:bg-orange-600 text-white px-8 py-4 rounded-full font-medium transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50 flex items-center gap-2 text-lg">
-              Get Started
+          <div className="flex flex-wrap items-center gap-6">
+            <button className="bg-primary hover:bg-orange-600 text-white px-10 py-5 rounded-full font-bold transition-all shadow-premium hover:shadow-premium-hover flex items-center gap-2 text-lg hover:-translate-y-1">
+              Order Now
               <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="flex items-center gap-3 px-6 py-4 rounded-full hover:bg-gray-100 transition-colors font-medium text-ink group">
-              <div className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+            <button className="flex items-center gap-3 px-8 py-5 rounded-full hover:bg-gray-100 transition-all font-bold text-ink group">
+              <div className="w-14 h-14 rounded-full bg-white shadow-premium flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all">
                 <Play className="w-5 h-5 ml-1" />
               </div>
-              Watch Video
+              Watch Our Story
             </button>
           </div>
 
-          <div className="mt-12 flex items-center gap-8">
+          <div className="mt-16 flex items-center gap-10">
             <div className="flex -space-x-4">
               {[1, 2, 3, 4].map((i) => (
                 <img 
                   key={i} 
                   src={`https://i.pravatar.cc/100?img=${i * 10}`} 
                   alt="Customer" 
-                  className="w-12 h-12 rounded-full border-4 border-paper object-cover" 
+                  className="w-14 h-14 rounded-full border-4 border-paper object-cover shadow-soft" 
                 />
               ))}
             </div>
+            <div className="h-10 w-[1px] bg-gray-200" />
             <div>
               <div className="flex items-center gap-1 text-yellow-400 mb-1">
-                {[...Array(5)].map((_, i) => <Star key={i} className="fill-current w-4 h-4" />)}
+                {[...Array(5)].map((_, i) => <Star key={i} className="fill-current w-5 h-5" />)}
               </div>
-              <p className="text-sm font-medium text-ink">
-                <span className="font-bold">4.9</span> (12.5k Reviews)
+              <p className="text-sm font-bold text-ink">
+                12k+ <span className="text-ink/50 font-medium">Happy Customers</span>
               </p>
             </div>
           </div>
@@ -168,34 +168,51 @@ function Hero() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-          className="relative lg:ml-auto w-full max-w-lg aspect-square"
+          className="relative lg:ml-auto w-full max-w-xl aspect-square"
         >
           {/* Circular mask for hero image */}
-          <div className="absolute inset-0 bg-primary/5 rounded-full transform rotate-12 scale-110" />
-          <div className="absolute inset-0 bg-primary/10 rounded-full transform -rotate-6 scale-105" />
-          <img 
-            src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-            alt="Healthy Food Bowl" 
-            className="w-full h-full object-cover rounded-full border-[16px] border-white shadow-2xl relative z-10"
-          />
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-orange-300/10 rounded-full transform rotate-12 scale-110 blur-2xl" />
+          <div className="absolute inset-0 bg-white rounded-full shadow-premium p-6 relative z-10">
+            <img 
+              src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+              alt="Healthy Food Bowl" 
+              className="w-full h-full object-cover rounded-full shadow-inner"
+            />
+          </div>
           
           {/* Floating badge */}
           <motion.div 
             animate={{ y: [-10, 10, -10] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl z-20 flex items-center gap-4 border border-gray-50"
+            className="absolute -bottom-4 -left-4 bg-white/90 backdrop-blur-md p-6 rounded-[2rem] shadow-premium z-20 flex items-center gap-5 border border-white/40"
           >
-            <div className="w-12 h-12 bg-orange-100 text-primary rounded-full flex items-center justify-center">
-              <Clock className="w-6 h-6" />
+            <div className="w-14 h-14 bg-orange-50 text-primary rounded-2xl flex items-center justify-center shadow-inner">
+              <Clock className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-xs text-ink/60 font-semibold uppercase tracking-wider mb-1">Delivery Time</p>
-              <p className="font-bold text-ink">On Time <span className="text-green-500">100%</span></p>
+              <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] mb-1">Fast Delivery</p>
+              <p className="font-bold text-2xl text-ink">~ 25 Mins</p>
             </div>
+          </motion.div>
+          
+          <motion.div 
+            animate={{ y: [10, -10, 10] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-4 -right-4 bg-white/90 backdrop-blur-md p-6 rounded-[2rem] shadow-premium z-20 flex items-center gap-5 border border-white/40"
+          >
+             <div className="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shadow-inner">
+                <ShieldCheck className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-[10px] text-green-600 font-black uppercase tracking-[0.2em] mb-1">Freshly Made</p>
+                <p className="font-bold text-2xl text-ink">100% Quality</p>
+              </div>
           </motion.div>
         </motion.div>
       </div>
     </section>
+  );
+}
   );
 }
 
@@ -253,67 +270,84 @@ function Services() {
 
 function About() {
   return (
-    <section id="about" className="py-20 bg-paper">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
+    <section id="about" className="py-24 bg-paper relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-20 items-center">
         <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className="relative"
         >
-          <img 
-            src="https://images.unsplash.com/photo-1600891964092-4316c288032e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-            alt="Chef Cooking" 
-            className="rounded-3xl shadow-xl w-full"
-          />
-          <div className="absolute -bottom-8 -right-8 bg-white p-6 rounded-2xl shadow-xl max-w-xs border border-gray-50 hidden sm:block">
-            <div className="flex items-center gap-4 mb-3">
-              <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                <Star className="w-6 h-6 fill-current" />
-              </div>
-              <h4 className="font-bold text-xl font-serif">15+ Years</h4>
-            </div>
-            <p className="text-sm text-ink/70">Of experience in cooking the most delicious food for our clients.</p>
+          <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-premium">
+            <img 
+              src="https://images.unsplash.com/photo-1600891964092-4316c288032e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+              alt="Chef Cooking" 
+              className="w-full object-cover aspect-[4/5] hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/20 to-transparent" />
           </div>
+          
+          <div className="absolute -bottom-10 -right-10 bg-white p-8 rounded-[2.5rem] shadow-premium-hover max-w-xs border border-gray-100 hidden sm:block z-20">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 bg-orange-50 text-primary rounded-2xl flex items-center justify-center">
+                <Star className="w-7 h-7 fill-primary" />
+              </div>
+              <div>
+                <h4 className="font-bold text-2xl font-serif text-ink leading-none">15+ Years</h4>
+                <p className="text-xs text-primary font-bold uppercase tracking-widest mt-1">Excellence</p>
+              </div>
+            </div>
+            <p className="text-sm text-ink/60 leading-relaxed italic">"Our commitment to quality is what defines every single dish we serve."</p>
+          </div>
+          
+          {/* Decorative shapes */}
+          <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
         </motion.div>
 
         <motion.div
            initial={{ opacity: 0, x: 50 }}
            whileInView={{ opacity: 1, x: 0 }}
            viewport={{ once: true }}
+           className="lg:pl-10"
         >
-          <p className="text-primary font-medium tracking-wide uppercase text-sm mb-3">About Us</p>
-          <h2 className="text-4xl lg:text-5xl font-serif font-bold text-ink mb-6">
-            We Create The Best Foodie Experience
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-primary font-bold text-xs uppercase tracking-widest mb-6 border border-orange-100">
+            Our Story
+          </div>
+          <h2 className="text-4xl lg:text-6xl font-serif font-bold text-ink mb-8 leading-[1.1]">
+            We Craft <span className="text-primary italic">Extraordinary</span> Foodie Experiences
           </h2>
-          <p className="text-lg text-ink/70 mb-6 leading-relaxed">
-            We are more than just a restaurant. We are a family of passionate chefs, creators, and food lovers dedicated to bringing you the most exceptional culinary experiences.
-          </p>
           <p className="text-lg text-ink/70 mb-8 leading-relaxed">
-            Every dish we serve is crafted with locally-sourced, fresh ingredients, prepared with love and an unwavering commitment to quality.
+            Savoria is more than a restaurant; it's a culinary destination where tradition meets innovation. Our passion for gastronomy is reflected in every meticulously prepared plate.
           </p>
 
-          <ul className="space-y-4 mb-10">
+          <div className="grid sm:grid-cols-2 gap-6 mb-12">
              {[
-               "Premium quality and fresh ingredients",
-               "Award-winning chefs and culinary experts",
-               "Cozy, relaxing, and unforgettable ambiance",
+               { title: "Fresh Ingredients", desc: "Locally sourced & premium quality" },
+               { title: "Master Chefs", desc: "Culinary experts from around the world" },
+               { title: "Elegant Ambiance", desc: "A cozy and unforgettable atmosphere" },
+               { title: "Free Delivery", desc: "On all orders above $50" },
              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <ArrowRight className="w-4 h-4 text-primary" />
+                <div key={i} className="flex gap-4 p-4 rounded-2xl hover:bg-white hover:shadow-soft transition-all group">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                    <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <span className="font-medium text-ink/80">{item}</span>
-                </li>
+                  <div>
+                    <h4 className="font-bold text-ink text-sm mb-1">{item.title}</h4>
+                    <p className="text-ink/50 text-xs">{item.desc}</p>
+                  </div>
+                </div>
              ))}
-          </ul>
+          </div>
 
-          <button className="bg-ink hover:bg-gray-800 text-white px-8 py-4 rounded-full font-medium transition-all shadow-lg flex items-center gap-2">
-            Learn More About Us
+          <button className="bg-ink hover:bg-primary text-white px-10 py-5 rounded-full font-bold transition-all shadow-xl hover:-translate-y-1 flex items-center gap-3">
+            Discover Our Story
+            <ArrowRight className="w-5 h-5" />
           </button>
         </motion.div>
       </div>
     </section>
+  );
+}
   );
 }
 
@@ -322,86 +356,116 @@ function PopularMenu() {
   const menuItems = [
     {
       id: 1,
-      name: "Classic Beef Burger",
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      price: "$12.99",
-      rating: 4.8,
-      category: "Burger"
+      name: "Signature Truffle Burger",
+      image: "/menu/burger.png",
+      price: "$18.99",
+      rating: 5.0,
+      category: "Signature"
     },
     {
       id: 2,
-      name: "Margherita Pizza",
-      image: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      price: "$14.50",
+      name: "Artisan Margherita",
+      image: "/menu/pizza.png",
+      price: "$16.50",
       rating: 4.9,
-      category: "Pizza"
+      category: "Stone Baked"
     },
     {
       id: 3,
-      name: "Fresh Salmon Salad",
-      image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      price: "$10.00",
-      rating: 4.7,
+      name: "Glazed Salmon Bowl",
+      image: "/menu/salmon-salad.png",
+      price: "$22.00",
+      rating: 4.8,
       category: "Healthy"
     },
     {
       id: 4,
-      name: "Spicy Noodles",
-      image: "https://images.unsplash.com/photo-1612929633738-8fe01f7c8166?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      price: "$11.25",
-      rating: 4.6,
-      category: "Asian"
+      name: "Szechuan Fire Noodles",
+      image: "/menu/spicy-noodles.png",
+      price: "$15.25",
+      rating: 4.7,
+      category: "Asian Fusion"
     }
   ];
 
   return (
-    <section id="menu" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+    <section id="menu" className="py-24 bg-white relative overflow-hidden">
+      {/* Decorative background element */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F27D26 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-2xl">
-            <p className="text-primary font-medium tracking-wide uppercase text-sm mb-3">Our Menu</p>
-            <h2 className="text-4xl font-serif font-bold text-ink mb-4">Our Popular Menu Items</h2>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-primary font-bold text-xs uppercase tracking-widest mb-4 border border-orange-100"
+            >
+              Exquisite Selection
+            </motion.div>
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-ink mb-4 leading-tight">
+              Curated Culinary <span className="text-primary italic">Excellence</span>
+            </h2>
           </div>
-          <button className="text-primary font-semibold flex items-center gap-2 hover:gap-3 transition-all whitespace-nowrap">
-            View All Menu <ArrowRight className="w-5 h-5" />
+          <button className="group flex items-center gap-3 text-ink font-bold hover:text-primary transition-all whitespace-nowrap">
+            Explore Full Menu 
+            <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all">
+              <ArrowRight className="w-5 h-5" />
+            </div>
           </button>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {menuItems.map((item, idx) => (
             <motion.div 
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-paper rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-shadow border border-gray-100 group"
+              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              className="group"
             >
-              <div className="relative mb-6 overflow-hidden rounded-2xl aspect-square">
-                <img 
-                  src={item.image} 
-                  alt={item.name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary">
-                  {item.category}
+              <div className="relative bg-paper rounded-[2.5rem] p-5 transition-all duration-500 shadow-soft hover:shadow-premium-hover border border-gray-50/50 group-hover:-translate-y-2">
+                <div className="relative mb-6 overflow-hidden rounded-[2rem] aspect-[4/5] shadow-inner">
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-ink shadow-sm border border-white/20">
+                    {item.category}
+                  </div>
+
+                  <motion.button 
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => addToCart(item)}
+                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0"
+                  >
+                    <Plus className="w-6 h-6" />
+                  </motion.button>
                 </div>
-              </div>
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-serif font-bold text-lg text-ink line-clamp-1">{item.name}</h3>
-                <div className="flex items-center gap-1 text-sm font-medium bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-                  <Star className="w-3 h-3 fill-current" />
-                  {item.rating}
+
+                <div className="px-2">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-serif font-bold text-xl text-ink leading-tight pr-2 group-hover:text-primary transition-colors">{item.name}</h3>
+                    <div className="flex items-center gap-1 text-xs font-bold text-ink/40">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      {item.rating}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                    <span className="font-serif font-bold text-2xl text-ink">{item.price}</span>
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-tighter">
+                      <Clock className="w-3 h-3" />
+                      15-20 min
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-between mt-4">
-                <span className="font-bold text-2xl text-ink">{item.price}</span>
-                <button 
-                  onClick={() => addToCart(item)}
-                  className="w-10 h-10 bg-ink hover:bg-primary text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                </button>
               </div>
             </motion.div>
           ))}
