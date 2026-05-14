@@ -338,17 +338,6 @@ function About() {
               className="w-full object-cover aspect-[4/5] group-hover:scale-105 transition-transform duration-1000 ease-in-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent opacity-60" />
-            
-            {/* Play Button Overlay for Story */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-2xl"
-              >
-                <Play className="w-8 h-8 fill-current ml-1" />
-              </motion.button>
-            </div>
           </div>
           
           <motion.div 
