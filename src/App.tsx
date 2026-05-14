@@ -10,70 +10,95 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navLinks = [
+    { name: "Home", href: "#home" },
+    { name: "Our Story", href: "#about" },
+    { name: "Menu", href: "#menu" },
+    { name: "Services", href: "#services" },
+    { name: "Master Chefs", href: "#chefs" },
+    { name: "Contact", href: "#contact" },
+  ];
+
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-premium py-4' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-serif font-bold text-xl">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-2 group cursor-pointer"
+        >
+          <div className="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center font-serif font-bold text-2xl shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform duration-500">
             S
           </div>
           <span className="font-serif font-bold text-2xl tracking-tight text-ink">
-            Savoria<span className="text-primary">.</span>
+            Savoria<span className="text-primary italic">.</span>
           </span>
-        </div>
+        </motion.div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#home" className="text-ink/80 hover:text-primary font-medium transition-colors">Home</a>
-          <a href="#about" className="text-ink/80 hover:text-primary font-medium transition-colors">About Us</a>
-          <a href="#menu" className="text-ink/80 hover:text-primary font-medium transition-colors">Menu</a>
-          <a href="#services" className="text-ink/80 hover:text-primary font-medium transition-colors">Services</a>
-          <a href="#chefs" className="text-ink/80 hover:text-primary font-medium transition-colors">Chefs</a>
-          <a href="#contact" className="text-ink/80 hover:text-primary font-medium transition-colors">Contact</a>
+        <div className="hidden lg:flex items-center gap-10">
+          {navLinks.map((link) => (
+            <a 
+              key={link.name}
+              href={link.href} 
+              className="text-ink/60 hover:text-primary font-bold text-sm uppercase tracking-widest transition-all duration-300 relative group"
+            >
+              {link.name}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+            </a>
+          ))}
         </div>
 
         {/* Actions */}
         <div className="hidden md:flex items-center gap-6">
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={onCartClick}
-            className="relative text-ink hover:text-primary transition-colors p-2 hover:bg-gray-100 rounded-full"
+            className="relative text-ink hover:text-primary transition-all p-3 bg-paper rounded-2xl shadow-soft hover:shadow-premium ring-1 ring-gray-100"
           >
-            <ShoppingCart className="w-6 h-6" />
-            {cartCount > 0 && (
-              <motion.span 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute top-0 right-0 bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white"
-              >
-                {cartCount}
-              </motion.span>
-            )}
-          </button>
-          <button className="bg-primary hover:bg-orange-600 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50 transform hover:-translate-y-0.5">
-            Book a Table
+            <ShoppingCart className="w-5 h-5" />
+            <AnimatePresence>
+              {cartCount > 0 && (
+                <motion.span 
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  className="absolute -top-1 -right-1 bg-primary text-white text-[9px] w-6 h-6 rounded-full flex items-center justify-center font-black border-2 border-white shadow-lg"
+                >
+                  {cartCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+          <button className="bg-ink hover:bg-primary text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-premium hover:shadow-premium-hover hover:-translate-y-0.5 text-sm uppercase tracking-widest">
+            Reservation
           </button>
         </div>
 
         {/* Mobile Toggle */}
-        <div className="md:hidden flex items-center gap-4">
+        <div className="lg:hidden flex items-center gap-4">
           <button 
             onClick={onCartClick}
-            className="relative text-ink p-2"
+            className="relative text-ink p-3 bg-paper rounded-xl shadow-soft ring-1 ring-gray-100"
           >
-            <ShoppingCart className="w-6 h-6" />
+            <ShoppingCart className="w-5 h-5" />
             {cartCount > 0 && (
-              <span className="absolute top-0 right-0 bg-primary text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] w-5 h-5 rounded-full flex items-center justify-center font-black border-2 border-white">
                 {cartCount}
               </span>
             )}
           </button>
-          <button className="text-ink" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+          <button 
+            className="text-ink p-2 hover:bg-paper rounded-xl transition-colors" 
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="w-7 h-7" /> : <MenuIcon className="w-7 h-7" />}
           </button>
         </div>
       </div>
@@ -82,18 +107,26 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden absolute top-full left-0 w-full bg-white border-t border-gray-100 shadow-lg py-4 px-4 flex flex-col gap-4 overflow-hidden"
+            initial={{ opacity: 0, y: -20, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -20, height: 0 }}
+            transition={{ duration: 0.4, ease: "circOut" }}
+            className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-premium py-8 px-6 flex flex-col gap-6 overflow-hidden z-40"
           >
-             <a href="#home" onClick={() => setIsOpen(false)} className="block text-ink hover:text-primary font-medium py-2">Home</a>
-             <a href="#about" onClick={() => setIsOpen(false)} className="block text-ink hover:text-primary font-medium py-2">About Us</a>
-             <a href="#menu" onClick={() => setIsOpen(false)} className="block text-ink hover:text-primary font-medium py-2">Menu</a>
-             <a href="#services" onClick={() => setIsOpen(false)} className="block text-ink hover:text-primary font-medium py-2">Services</a>
-             <a href="#chefs" onClick={() => setIsOpen(false)} className="block text-ink hover:text-primary font-medium py-2">Chefs</a>
-             <a href="#contact" onClick={() => setIsOpen(false)} className="block text-ink hover:text-primary font-medium py-2">Contact</a>
-             <button className="bg-primary text-white px-6 py-3 rounded-full font-medium mt-2 w-full">
+             {navLinks.map((link, idx) => (
+                <motion.a 
+                  key={link.name}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  href={link.href} 
+                  onClick={() => setIsOpen(false)} 
+                  className="text-2xl font-serif font-bold text-ink hover:text-primary transition-colors py-2"
+                >
+                  {link.name}
+                </motion.a>
+             ))}
+             <button className="bg-primary text-white px-6 py-5 rounded-2xl font-bold mt-4 w-full shadow-premium text-lg uppercase tracking-widest">
               Book a Table
             </button>
           </motion.div>
@@ -114,45 +147,50 @@ function Hero() {
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: "circOut" }}
           className="max-w-2xl"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-primary font-bold text-xs uppercase tracking-widest mb-8 border border-orange-200">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 text-primary font-bold text-[10px] uppercase tracking-[0.2em] mb-8 border border-orange-100"
+          >
             <span className="flex h-2 w-2 rounded-full bg-primary opacity-75 animate-ping"></span>
             Culinary Excellence
-          </div>
-          <h1 className="text-6xl lg:text-8xl font-serif font-bold leading-[1.05] mb-8 text-ink">
+          </motion.div>
+          <h1 className="text-5xl md:text-6xl lg:text-8xl font-serif font-bold leading-[1.05] mb-8 text-ink">
             Elevate Your <span className="text-primary italic">Palate</span> with Every Bite
           </h1>
-          <p className="text-xl text-ink/60 mb-10 max-w-lg leading-relaxed font-medium">
+          <p className="text-lg md:text-xl text-ink/60 mb-10 max-w-lg leading-relaxed font-medium">
             Experience the art of fine dining delivered to your doorstep. Fresh ingredients, master chefs, and a passion for perfection.
           </p>
           
-          <div className="flex flex-wrap items-center gap-6">
-            <button className="bg-primary hover:bg-orange-600 text-white px-10 py-5 rounded-full font-bold transition-all shadow-premium hover:shadow-premium-hover flex items-center gap-2 text-lg hover:-translate-y-1">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <button className="w-full sm:w-auto bg-primary hover:bg-orange-600 text-white px-10 py-5 rounded-2xl font-bold transition-all shadow-premium hover:shadow-premium-hover flex items-center justify-center gap-2 text-lg hover:-translate-y-1">
               Order Now
               <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="flex items-center gap-3 px-8 py-5 rounded-full hover:bg-gray-100 transition-all font-bold text-ink group">
-              <div className="w-14 h-14 rounded-full bg-white shadow-premium flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all">
+            <button className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-5 rounded-2xl hover:bg-white hover:shadow-soft transition-all font-bold text-ink group">
+              <div className="w-14 h-14 rounded-full bg-white shadow-premium flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
                 <Play className="w-5 h-5 ml-1" />
               </div>
               Watch Our Story
             </button>
           </div>
 
-          <div className="mt-16 flex items-center gap-10">
+          <div className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-10">
             <div className="flex -space-x-4">
               {[1, 2, 3, 4].map((i) => (
                 <img 
                   key={i} 
                   src={`https://i.pravatar.cc/100?img=${i * 10}`} 
                   alt="Customer" 
-                  className="w-14 h-14 rounded-full border-4 border-paper object-cover shadow-soft" 
+                  className="w-14 h-14 rounded-full border-4 border-paper object-cover shadow-soft ring-1 ring-black/5" 
                 />
               ))}
             </div>
-            <div className="h-10 w-[1px] bg-gray-200" />
+            <div className="hidden sm:block h-10 w-[1px] bg-gray-200" />
             <div>
               <div className="flex items-center gap-1 text-yellow-400 mb-1">
                 {[...Array(5)].map((_, i) => <Star key={i} className="fill-current w-5 h-5" />)}
@@ -234,11 +272,21 @@ function Services() {
   ];
 
   return (
-    <section id="services" className="py-20 bg-white">
+    <section id="services" className="py-24 bg-white relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-orange-50/30 -skew-x-12 transform origin-top translate-x-1/2 -z-10" />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-primary font-medium tracking-wide uppercase text-sm mb-3">What We Serve</p>
-          <h2 className="text-4xl font-serif font-bold text-ink mb-4">Your Favourite Food Delivery Partner</h2>
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-primary font-bold text-[10px] uppercase tracking-[0.2em] mb-4 border border-orange-100"
+          >
+            What We Offer
+          </motion.div>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-ink mb-6">Your Favorite Food <span className="text-primary italic">Delivery Partner</span></h2>
+          <p className="text-ink/60 text-lg font-medium">We don't just deliver food, we deliver an experience crafted with passion and excellence.</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
@@ -248,16 +296,22 @@ function Services() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.2 }}
-              className="text-center p-8 rounded-3xl hover:bg-orange-50/50 transition-colors group cursor-pointer border border-transparent hover:border-orange-100"
+              transition={{ delay: idx * 0.1, duration: 0.6 }}
+              className="group text-center p-10 rounded-[3rem] bg-paper hover:bg-white transition-all duration-500 shadow-soft hover:shadow-premium ring-1 ring-gray-100/50 cursor-pointer"
             >
-              <div className="w-20 h-20 mx-auto bg-orange-100 text-primary rounded-full flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300">
+              <div className="w-24 h-24 mx-auto bg-white shadow-premium text-primary rounded-[2rem] flex items-center justify-center mb-8 group-hover:-translate-y-4 transition-transform duration-500 ease-out">
                 {service.icon}
               </div>
-              <h3 className="text-xl font-bold font-serif mb-3 text-ink">{service.title}</h3>
-              <p className="text-ink/70 leading-relaxed">
+              <h3 className="text-2xl font-bold font-serif mb-4 text-ink group-hover:text-primary transition-colors">{service.title}</h3>
+              <p className="text-ink/60 leading-relaxed font-medium">
                 {service.description}
               </p>
+              
+              <div className="mt-8 pt-8 border-t border-gray-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <span className="text-primary font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                  Learn More <ArrowRight className="w-4 h-4" />
+                </span>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -271,45 +325,64 @@ function About() {
     <section id="about" className="py-24 bg-paper relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-20 items-center">
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative"
         >
-          <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-premium">
+          <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-premium group">
             <img 
-              src="https://images.unsplash.com/photo-1600891964092-4316c288032e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-              alt="Chef Cooking" 
-              className="w-full object-cover aspect-[4/5] hover:scale-105 transition-transform duration-700"
+              src="/about/our-story.png" 
+              alt="Chef Plating" 
+              className="w-full object-cover aspect-[4/5] group-hover:scale-105 transition-transform duration-1000 ease-in-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent opacity-60" />
+            
+            {/* Play Button Overlay for Story */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-2xl"
+              >
+                <Play className="w-8 h-8 fill-current ml-1" />
+              </motion.button>
+            </div>
           </div>
           
-          <div className="absolute -bottom-10 -right-10 bg-white p-8 rounded-[2.5rem] shadow-premium-hover max-w-xs border border-gray-100 hidden sm:block z-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="absolute -bottom-10 -right-10 bg-white p-8 rounded-[2.5rem] shadow-premium-hover max-w-xs border border-gray-100 hidden sm:block z-20"
+          >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-14 h-14 bg-orange-50 text-primary rounded-2xl flex items-center justify-center">
                 <Star className="w-7 h-7 fill-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-2xl font-serif text-ink leading-none">15+ Years</h4>
-                <p className="text-xs text-primary font-bold uppercase tracking-widest mt-1">Excellence</p>
+                <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] mt-1">Excellence</p>
               </div>
             </div>
-            <p className="text-sm text-ink/60 leading-relaxed italic">"Our commitment to quality is what defines every single dish we serve."</p>
-          </div>
+            <p className="text-sm text-ink/60 leading-relaxed italic">"Our commitment to quality is what defines every single dish we serve at Savoria."</p>
+          </motion.div>
           
           {/* Decorative shapes */}
-          <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl -z-10" />
         </motion.div>
 
         <motion.div
            initial={{ opacity: 0, x: 50 }}
            whileInView={{ opacity: 1, x: 0 }}
            viewport={{ once: true }}
+           transition={{ duration: 0.8, ease: "easeOut" }}
            className="lg:pl-10"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-primary font-bold text-xs uppercase tracking-widest mb-6 border border-orange-100">
-            Our Story
+            Our Legacy
           </div>
           <h2 className="text-4xl lg:text-6xl font-serif font-bold text-ink mb-8 leading-[1.1]">
             We Craft <span className="text-primary italic">Extraordinary</span> Foodie Experiences
@@ -318,28 +391,32 @@ function About() {
             Savoria is more than a restaurant; it's a culinary destination where tradition meets innovation. Our passion for gastronomy is reflected in every meticulously prepared plate.
           </p>
 
-          <div className="grid sm:grid-cols-2 gap-6 mb-12">
+          <div className="grid sm:grid-cols-2 gap-4 mb-12">
              {[
                { title: "Fresh Ingredients", desc: "Locally sourced & premium quality" },
                { title: "Master Chefs", desc: "Culinary experts from around the world" },
                { title: "Elegant Ambiance", desc: "A cozy and unforgettable atmosphere" },
                { title: "Free Delivery", desc: "On all orders above $50" },
              ].map((item, i) => (
-                <div key={i} className="flex gap-4 p-4 rounded-2xl hover:bg-white hover:shadow-soft transition-all group">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                    <ShieldCheck className="w-5 h-5" />
+                <motion.div 
+                  key={i} 
+                  whileHover={{ y: -5 }}
+                  className="flex gap-4 p-5 rounded-3xl bg-white shadow-soft hover:shadow-premium transition-all duration-300 border border-gray-100/50 group"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-orange-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                    <ShieldCheck className="w-6 h-6" />
                   </div>
                   <div>
                     <h4 className="font-bold text-ink text-sm mb-1">{item.title}</h4>
-                    <p className="text-ink/50 text-xs">{item.desc}</p>
+                    <p className="text-ink/50 text-[10px] leading-tight font-medium uppercase tracking-wider">{item.desc}</p>
                   </div>
-                </div>
+                </motion.div>
              ))}
           </div>
 
-          <button className="bg-ink hover:bg-primary text-white px-10 py-5 rounded-full font-bold transition-all shadow-xl hover:-translate-y-1 flex items-center gap-3">
-            Discover Our Story
-            <ArrowRight className="w-5 h-5" />
+          <button className="bg-ink hover:bg-primary text-white px-10 py-5 rounded-full font-bold transition-all shadow-premium hover:shadow-premium-hover hover:-translate-y-1 flex items-center gap-3 group">
+            Discover Our Full Story
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </motion.div>
       </div>
@@ -419,27 +496,27 @@ function PopularMenu() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
               className="group"
             >
-              <div className="relative bg-paper rounded-[2.5rem] p-5 transition-all duration-500 shadow-soft hover:shadow-premium-hover border border-gray-50/50 group-hover:-translate-y-2">
-                <div className="relative mb-6 overflow-hidden rounded-[2rem] aspect-[4/5] shadow-inner">
+              <div className="relative bg-paper rounded-[2.5rem] p-5 transition-all duration-500 shadow-soft hover:shadow-premium-hover border border-gray-100/30 ring-1 ring-gray-100/50 group-hover:-translate-y-3">
+                <div className="relative mb-6 overflow-hidden rounded-[2rem] aspect-[4/5] shadow-inner ring-1 ring-black/5">
                   <img 
                     src={item.image} 
                     alt={item.name} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-in-out"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-ink shadow-sm border border-white/20">
+                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-ink shadow-sm border border-white/20">
                     {item.category}
                   </div>
 
                   <motion.button 
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => addToCart(item)}
-                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0"
+                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 z-20"
                   >
                     <Plus className="w-6 h-6" />
                   </motion.button>
@@ -447,18 +524,18 @@ function PopularMenu() {
 
                 <div className="px-2">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-serif font-bold text-xl text-ink leading-tight pr-2 group-hover:text-primary transition-colors">{item.name}</h3>
-                    <div className="flex items-center gap-1 text-xs font-bold text-ink/40">
+                    <h3 className="font-serif font-bold text-xl text-ink leading-tight pr-2 group-hover:text-primary transition-colors duration-300">{item.name}</h3>
+                    <div className="flex items-center gap-1 text-[10px] font-black text-ink/30 bg-gray-50 px-2 py-1 rounded-full">
                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                       {item.rating}
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-50">
-                    <span className="font-serif font-bold text-2xl text-ink">{item.price}</span>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-tighter">
-                      <Clock className="w-3 h-3" />
-                      15-20 min
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
+                    <span className="font-serif font-bold text-2xl text-ink group-hover:text-primary transition-colors duration-300">{item.price}</span>
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-ink/40 uppercase tracking-widest">
+                      <Clock className="w-3.5 h-3.5 text-primary/40" />
+                      15 min
                     </div>
                   </div>
                 </div>
@@ -622,37 +699,43 @@ function Chefs() {
           {chefs.map((chef, idx) => (
             <motion.div 
               key={chef.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+              transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
               className="group text-center"
             >
-              <div className="relative mb-6 overflow-hidden rounded-[2.5rem] aspect-[4/5] shadow-2xl ring-1 ring-black/5">
+              <div className="relative mb-8 overflow-hidden rounded-[3rem] aspect-[4/5] shadow-premium ring-1 ring-black/5 group-hover:shadow-premium-hover transition-all duration-500">
                 <img 
                   src={chef.image} 
                   alt={chef.name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-in-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
                 
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
                   <div className="flex gap-4">
                     {['Facebook', 'Twitter', 'Instagram'].map(social => (
-                      <button key={social} className="w-10 h-10 rounded-full bg-white text-primary hover:bg-primary hover:text-white flex items-center justify-center transition-all duration-300 shadow-xl hover:-translate-y-1">
+                      <motion.button 
+                        key={social} 
+                        whileHover={{ y: -5, backgroundColor: 'var(--color-primary)', color: 'white' }}
+                        className="w-12 h-12 rounded-2xl bg-white text-primary flex items-center justify-center transition-all duration-300 shadow-2xl"
+                      >
                         {social[0]}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
               </div>
-              <h3 className="font-serif font-bold text-2xl text-ink mb-1 group-hover:text-primary transition-colors">{chef.name}</h3>
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="w-8 h-[1px] bg-primary/30"></span>
-                <p className="text-primary font-semibold text-sm uppercase tracking-wider">{chef.role}</p>
-                <span className="w-8 h-[1px] bg-primary/30"></span>
+              <h3 className="font-serif font-bold text-2xl text-ink mb-2 group-hover:text-primary transition-colors duration-300">{chef.name}</h3>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <span className="w-10 h-[1px] bg-primary/20"></span>
+                <p className="text-primary font-bold text-xs uppercase tracking-[0.2em]">{chef.role}</p>
+                <span className="w-10 h-[1px] bg-primary/20"></span>
               </div>
-              <p className="text-ink/40 text-xs font-bold tracking-[0.2em] uppercase">{chef.nationality}</p>
+              <div className="inline-block px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-ink/30 text-[10px] font-black tracking-widest uppercase">
+                {chef.nationality}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -784,81 +867,98 @@ function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-ink/60 backdrop-blur-md z-[60]"
           />
           <motion.div 
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col"
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="fixed right-0 top-0 h-full w-full sm:max-w-md bg-white z-[70] shadow-premium flex flex-col"
           >
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-paper/50">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-paper/50 backdrop-blur-md sticky top-0 z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <ShoppingCart className="w-6 h-6" />
                 </div>
-                <h2 className="text-2xl font-serif font-bold text-ink">Your Cart</h2>
+                <div>
+                  <h2 className="text-2xl font-serif font-bold text-ink">Your Cart</h2>
+                  <p className="text-[10px] text-ink/40 font-black uppercase tracking-widest">{cart.length} Items Selected</p>
+                </div>
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-ink/60 hover:text-ink">
+              <button 
+                onClick={onClose} 
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-2xl transition-all text-ink/40 hover:text-ink active:scale-90"
+              >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-6 space-y-8 scroll-smooth">
               {cart.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
-                    <ShoppingCart className="w-12 h-12" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-ink">Your cart is empty</h3>
-                    <p className="text-ink/60">Looks like you haven't added anything yet.</p>
+                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="w-32 h-32 bg-gray-50 rounded-[2.5rem] flex items-center justify-center text-gray-200 border border-gray-100"
+                  >
+                    <ShoppingCart className="w-16 h-16" />
+                  </motion.div>
+                  <div className="max-w-xs">
+                    <h3 className="text-2xl font-serif font-bold text-ink mb-2">Cart is Empty</h3>
+                    <p className="text-ink/60 leading-relaxed font-medium">Looks like you haven't discovered our delicacies yet.</p>
                   </div>
                   <button 
                     onClick={onClose}
-                    className="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-primary/20 hover:bg-orange-600 transition-colors"
+                    className="bg-ink text-white px-10 py-4 rounded-2xl font-bold shadow-premium hover:bg-primary transition-all duration-500"
                   >
-                    Start Ordering
+                    Explore Menu
                   </button>
                 </div>
               ) : (
-                cart.map((item) => (
+                cart.map((item, idx) => (
                   <motion.div 
                     layout
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
                     key={item.id}
-                    className="flex gap-4 group"
+                    className="flex gap-5 group"
                   >
-                    <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden flex-shrink-0 ring-1 ring-gray-100 shadow-soft group-hover:shadow-premium transition-shadow duration-500">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-1">
-                        <h4 className="font-bold text-ink truncate pr-2">{item.name}</h4>
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-gray-300 hover:text-red-500 transition-colors p-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                      <div>
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-bold text-ink truncate pr-2 font-serif text-lg">{item.name}</h4>
+                          <button 
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-gray-300 hover:text-red-500 transition-colors p-1 active:scale-90"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                        <p className="text-primary font-black text-sm uppercase tracking-widest">${item.price.toFixed(2)}</p>
                       </div>
-                      <p className="text-primary font-bold mb-3">${item.price.toFixed(2)}</p>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center bg-gray-50 rounded-full p-1 border border-gray-100">
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-gray-100">
                           <button 
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-ink/60 hover:text-ink"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-ink/40 hover:text-ink"
                           >
                             <Minus className="w-4 h-4" />
                           </button>
-                          <span className="w-8 text-center font-bold text-sm text-ink">{item.quantity}</span>
+                          <span className="w-10 text-center font-black text-sm text-ink">{item.quantity}</span>
                           <button 
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-ink/60 hover:text-ink"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-ink/40 hover:text-ink"
                           >
                             <Plus className="w-4 h-4" />
                           </button>
                         </div>
+                        <p className="font-serif font-bold text-ink">${(item.price * item.quantity).toFixed(2)}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -867,17 +967,17 @@ function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
             </div>
 
             {cart.length > 0 && (
-              <div className="p-6 bg-paper/50 border-t border-gray-100 space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-ink/60">
+              <div className="p-8 bg-paper/80 backdrop-blur-xl border-t border-gray-100 space-y-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between text-ink/40 font-bold text-[10px] uppercase tracking-[0.2em]">
                     <span>Subtotal</span>
-                    <span>${cartTotal.toFixed(2)}</span>
+                    <span className="text-ink">${cartTotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-ink/60">
-                    <span>Delivery Fee</span>
-                    <span className="text-green-600 font-medium">Free</span>
+                  <div className="flex justify-between text-ink/40 font-bold text-[10px] uppercase tracking-[0.2em]">
+                    <span>Delivery</span>
+                    <span className="text-green-600">Free</span>
                   </div>
-                  <div className="flex justify-between text-xl font-bold text-ink pt-2 border-t border-gray-200">
+                  <div className="flex justify-between text-2xl font-serif font-bold text-ink pt-4 border-t border-gray-100">
                     <span>Total</span>
                     <span>${cartTotal.toFixed(2)}</span>
                   </div>
@@ -885,18 +985,21 @@ function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                 <button 
                   onClick={handleOrder}
                   disabled={isCheckingOut}
-                  className="w-full bg-primary hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-3 group"
+                  className="w-full bg-primary hover:bg-orange-600 disabled:bg-orange-300 text-white font-black py-5 rounded-[2rem] shadow-premium hover:shadow-premium-hover transition-all flex items-center justify-center gap-3 group text-lg uppercase tracking-widest"
                 >
                   {isCheckingOut ? (
                     <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
-                      Place Order
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      Checkout Now
+                      <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
                 </button>
-                <p className="text-center text-[10px] text-ink/40 uppercase font-bold tracking-widest">Secure Checkout Powered by Savoria</p>
+                <div className="flex items-center justify-center gap-2 opacity-30 grayscale">
+                   <ShieldCheck className="w-4 h-4 text-ink" />
+                   <p className="text-[10px] font-black uppercase tracking-widest">End-to-End Encrypted</p>
+                </div>
               </div>
             )}
           </motion.div>
