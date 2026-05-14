@@ -9,15 +9,6 @@
   --font-sans: "Inter", sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-::selection {
-  background-color: var(--color-primary);
-  color: white;
-}
-
 body {
   font-family: var(--font-sans);
   background-color: var(--color-paper);
