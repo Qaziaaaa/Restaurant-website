@@ -19,33 +19,31 @@ export default function Navbar({ onOpenCart }: NavbarProps) {
 
   const navLinks = [
     { name: 'Home', href: '#home' },
-    { name: 'About Us', href: '#about' },
     { name: 'Menu', href: '#menu' },
-    { name: 'Services', href: '#services' },
-    { name: 'Chefs', href: '#chefs' },
+    { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact' },
   ];
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg py-3' : 'bg-transparent py-6'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-4' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         {/* Logo */}
-        <div className="flex items-center gap-2 group cursor-pointer">
-          <div className="w-11 h-11 bg-primary text-white rounded-2xl flex items-center justify-center font-serif font-bold text-xl rotate-3 group-hover:rotate-0 transition-transform duration-300 shadow-lg shadow-primary/20">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center font-serif font-bold text-xl">
             S
           </div>
           <span className="font-serif font-bold text-2xl tracking-tight text-ink">
-            Savoria<span className="text-primary italic">.</span>
+            Savoria
           </span>
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <a 
               key={link.name}
               href={link.href} 
-              className="text-ink/70 hover:text-primary font-semibold transition-all hover:translate-y-[-1px] relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-primary after:transition-all hover:after:w-full"
+              className="text-ink/70 hover:text-primary font-medium transition-colors"
             >
               {link.name}
             </a>
@@ -56,16 +54,16 @@ export default function Navbar({ onOpenCart }: NavbarProps) {
         <div className="hidden md:flex items-center gap-6">
           <button 
             onClick={onOpenCart}
-            className="relative p-3 rounded-2xl bg-white shadow-sm border border-gray-100 hover:border-primary/30 hover:shadow-md transition-all group"
+            className="relative p-2 text-ink hover:text-primary transition-colors"
           >
-            <ShoppingCart className="w-6 h-6 text-ink group-hover:text-primary transition-colors" />
+            <ShoppingCart className="w-6 h-6" />
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold animate-in fade-in zoom-in duration-300">
+              <span className="absolute top-0 right-0 bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
                 {totalItems}
               </span>
             )}
           </button>
-          <button className="bg-ink hover:bg-gray-800 text-white px-7 py-3.5 rounded-2xl font-bold transition-all shadow-xl shadow-ink/10 hover:shadow-ink/20 transform hover:-translate-y-0.5 active:scale-95">
+          <button className="bg-primary hover:bg-orange-600 text-white px-6 py-2 rounded-xl font-semibold transition-all">
             Book a Table
           </button>
         </div>
@@ -78,7 +76,7 @@ export default function Navbar({ onOpenCart }: NavbarProps) {
           >
             <ShoppingCart className="w-6 h-6" />
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+              <span className="absolute top-0 right-0 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {totalItems}
               </span>
             )}
@@ -91,18 +89,18 @@ export default function Navbar({ onOpenCart }: NavbarProps) {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-lg border-t border-gray-100 shadow-2xl py-6 px-6 flex flex-col gap-6 animate-in slide-in-from-top duration-300">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white border-t border-gray-100 shadow-lg py-6 px-6 flex flex-col gap-4">
            {navLinks.map((link) => (
              <a 
               key={link.name}
               href={link.href} 
               onClick={() => setIsOpen(false)}
-              className="block text-ink/80 hover:text-primary font-bold text-lg py-1 transition-colors"
+              className="block text-ink/80 hover:text-primary font-semibold py-2"
              >
                {link.name}
              </a>
            ))}
-           <button className="bg-primary text-white px-6 py-4 rounded-2xl font-bold mt-2 w-full shadow-lg shadow-primary/20">
+           <button className="bg-primary text-white px-6 py-3 rounded-xl font-semibold w-full">
             Book a Table
           </button>
         </div>
