@@ -207,12 +207,9 @@ function Hero() {
                 <p className="text-[10px] text-green-600 font-black uppercase tracking-[0.2em] mb-1">Freshly Made</p>
                 <p className="font-bold text-2xl text-ink">100% Quality</p>
               </div>
-          </motion.div>
         </motion.div>
       </div>
     </section>
-  );
-}
   );
 }
 
@@ -346,8 +343,6 @@ function About() {
         </motion.div>
       </div>
     </section>
-  );
-}
   );
 }
 
