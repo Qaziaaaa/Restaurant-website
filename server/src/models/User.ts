@@ -16,6 +16,10 @@ export interface IUser extends Document {
     country: string;
     isDefault?: boolean;
   }[];
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  verificationToken?: string;
+  isVerified: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -60,6 +64,13 @@ const userSchema = new Schema<IUser>(
         },
       },
     ],
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    verificationToken: String,
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -72,7 +83,9 @@ userSchema.pre('save', async function () {
     return;
   }
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password as string, salt);
+  const password = this.get('password') as string;
+  const hash = await bcrypt.hash(password, salt);
+  this.set('password', hash);
 });
 
 // Compare password

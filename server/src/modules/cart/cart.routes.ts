@@ -1,10 +1,16 @@
-import express from 'express';
+import { Router } from 'express';
+import { getCart, addItem, removeItem, updateQuantity, applyCoupon, clear } from './cart.controller';
+import { protect } from '../../middlewares/authMiddleware';
 
-const router = express.Router();
+const router = Router();
 
-// Cart routes will go here
-router.get('/', (req, res) => {
-  res.send('Cart module');
-});
+router.use(protect);
+
+router.get('/', getCart);
+router.post('/items', addItem);
+router.put('/items/:itemId', updateQuantity);
+router.delete('/items/:itemId', removeItem);
+router.post('/coupon', applyCoupon);
+router.delete('/', clear);
 
 export default router;

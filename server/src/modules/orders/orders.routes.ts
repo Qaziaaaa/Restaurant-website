@@ -1,10 +1,13 @@
-import express from 'express';
+import { Router } from 'express';
+import { createOrder, getMyOrders, getOrderDetails } from './orders.controller';
+import { protect } from '../../middlewares/authMiddleware';
 
-const router = express.Router();
+const router = Router();
 
-// Orders routes will go here
-router.get('/', (req, res) => {
-  res.send('Orders module');
-});
+router.use(protect);
+
+router.post('/', createOrder);
+router.get('/', getMyOrders);
+router.get('/:id', getOrderDetails);
 
 export default router;

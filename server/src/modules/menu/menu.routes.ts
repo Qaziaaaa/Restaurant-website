@@ -1,10 +1,14 @@
-import express from 'express';
+import { Router } from 'express';
+import { getAllMenu, getMenuById } from './menu.controller';
 
-const router = express.Router();
+const router = Router();
 
-// Menu routes will go here
-router.get('/', (req, res) => {
-  res.send('Menu module');
-});
+router.get('/', getAllMenu);
+router.get('/:id', getMenuById);
+
+// Admin routes for future
+// router.post('/', requireAuth, requireAdmin, validateCreateMenu, createMenu);
+// router.put('/:id', requireAuth, requireAdmin, updateMenu);
+// router.delete('/:id', requireAuth, requireAdmin, deleteMenu);
 
 export default router;

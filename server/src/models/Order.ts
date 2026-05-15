@@ -1,18 +1,40 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { OrderStatus, PaymentStatus } from '../constants';
 
-export interface IOrderItem {
-  menuItem: mongoose.Types.ObjectId;
-  quantity: number;
-  price: number;
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  PREPARING = 'PREPARING',
+  READY = 'READY',
+  OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+  REFUNDED = 'REFUNDED'
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED'
 }
 
 export interface IOrder extends Document {
+  orderNumber: string;
   user: mongoose.Types.ObjectId;
-  restaurantId?: mongoose.Types.ObjectId;
-  items: IOrderItem[];
-  totalAmount: number;
-  status: OrderStatus;
+  items: {
+    menuItem: mongoose.Types.ObjectId;
+    nameSnapshot: string;
+    quantity: number;
+    priceSnapshot: number;
+    selectedAddons: { name: string; price: number }[];
+    selectedVariant?: { name: string; price: number };
+    itemTotal: number;
+  }[];
+  pricingBreakdown: {
+    subtotal: number;
+    tax: number;
+    discount: number;
+    total: number;
+  };
   deliveryAddress: {
     street: string;
     city: string;
@@ -20,68 +42,55 @@ export interface IOrder extends Document {
     zipCode: string;
     country: string;
   };
-  paymentMethod: string;
   paymentStatus: PaymentStatus;
+  orderStatus: OrderStatus;
 }
+
+const orderItemSchema = new Schema({
+  menuItem: { type: Schema.Types.ObjectId, ref: 'MenuItem', required: true },
+  nameSnapshot: { type: String, required: true },
+  quantity: { type: Number, required: true },
+  priceSnapshot: { type: Number, required: true },
+  selectedAddons: [{ name: String, price: Number }],
+  selectedVariant: { name: String, price: Number },
+  itemTotal: { type: Number, required: true }
+});
 
 const orderSchema = new Schema<IOrder>(
   {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    restaurantId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Restaurant',
-    },
-    items: [
-      {
-        menuItem: {
-          type: Schema.Types.ObjectId,
-          ref: 'MenuItem',
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: Object.values(OrderStatus),
-      default: OrderStatus.PENDING,
+    orderNumber: { type: String, required: true, unique: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    items: [orderItemSchema],
+    pricingBreakdown: {
+      subtotal: { type: Number, required: true },
+      tax: { type: Number, required: true },
+      discount: { type: Number, required: true, default: 0 },
+      total: { type: Number, required: true }
     },
     deliveryAddress: {
-      street: String,
-      city: String,
-      state: String,
-      zipCode: String,
-      country: String,
-    },
-    paymentMethod: {
-      type: String,
-      default: 'cash_on_delivery',
+      street: { type: String, required: true },
+      city: { type: String, required: true },
+      state: { type: String, required: true },
+      zipCode: { type: String, required: true },
+      country: { type: String, required: true }
     },
     paymentStatus: {
       type: String,
       enum: Object.values(PaymentStatus),
-      default: PaymentStatus.PENDING,
+      default: PaymentStatus.PENDING
     },
+    orderStatus: {
+      type: String,
+      enum: Object.values(OrderStatus),
+      default: OrderStatus.PENDING
+    }
   },
   {
     timestamps: true,
   }
 );
+
+// TODO: Future Payment Integration Hook
+// orderSchema.post('save', async function(doc) { ... });
 
 export default mongoose.model<IOrder>('Order', orderSchema);
