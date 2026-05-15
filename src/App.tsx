@@ -505,7 +505,7 @@ function PopularMenu() {
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => addToCart(item)}
-                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-100 translate-y-4 group-hover:translate-y-0 z-20"
+                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-75 translate-y-4 group-hover:translate-y-0 z-20"
                   >
                     <Plus className="w-6 h-6" />
                   </motion.button>
