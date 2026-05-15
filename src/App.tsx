@@ -297,7 +297,7 @@ function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.6 }}
-              className="group text-center p-10 rounded-[2.5rem] bg-paper hover:bg-white transition-all duration-200 shadow-soft hover:shadow-premium hover:-translate-y-2 ring-1 ring-gray-100/50 cursor-pointer"
+              className="group text-center p-10 rounded-[2.5rem] bg-paper hover:bg-white transition-all duration-500 shadow-soft hover:shadow-premium hover:-translate-y-2 ring-1 ring-gray-100/50 cursor-pointer"
             >
               <div className="w-24 h-24 mx-auto bg-white shadow-premium text-primary rounded-[2rem] flex items-center justify-center mb-8 group-hover:-translate-y-4 transition-transform duration-200 ease-out">
                 {service.icon}
@@ -488,7 +488,7 @@ function PopularMenu() {
               transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
               className="group"
             >
-              <div className="relative bg-paper rounded-[2.5rem] p-5 transition-all duration-200 shadow-soft hover:shadow-premium-hover border border-gray-100/30 ring-1 ring-gray-100/50 group-hover:-translate-y-3">
+              <div className="relative bg-paper rounded-[2.5rem] p-5 transition-all duration-500 shadow-soft hover:shadow-premium-hover border border-gray-100/30 ring-1 ring-gray-100/50 group-hover:-translate-y-3">
                 <div className="relative mb-6 overflow-hidden rounded-[2rem] aspect-[4/5] shadow-inner ring-1 ring-black/5">
                   <img 
                     src={item.image} 
@@ -505,7 +505,7 @@ function PopularMenu() {
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => addToCart(item)}
-                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-4 group-hover:translate-y-0 z-20"
+                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-100 translate-y-4 group-hover:translate-y-0 z-20"
                   >
                     <Plus className="w-6 h-6" />
                   </motion.button>
@@ -597,7 +597,7 @@ function Footer() {
                 { name: 'Twitter', icon: <Twitter className="w-5 h-5" /> },
                 { name: 'Instagram', icon: <Instagram className="w-5 h-5" /> }
               ].map(social => (
-                 <button key={social.name} className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition-all duration-150 hover:-translate-y-1 text-sm shadow-sm hover:shadow-premium-hover text-white">
+                 <button key={social.name} className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition-all duration-100 hover:-translate-y-1 text-sm shadow-sm hover:shadow-premium-hover text-white">
                    {social.icon}
                  </button>
               ))}
@@ -716,7 +716,7 @@ function Chefs() {
                       <motion.button 
                         key={social.name} 
                         whileHover={{ y: -5, backgroundColor: 'var(--color-primary)', color: 'white' }}
-                        className="w-12 h-12 rounded-2xl bg-white text-primary flex items-center justify-center transition-all duration-150 shadow-2xl"
+                        className="w-12 h-12 rounded-2xl bg-white text-primary flex items-center justify-center transition-all duration-100 shadow-2xl"
                       >
                         {social.icon}
                       </motion.button>
