@@ -24,7 +24,7 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
   ];
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-premium py-4' : 'bg-transparent py-6'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-200 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-premium py-4' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         {/* Logo */}
         <motion.div 
@@ -32,7 +32,7 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
           animate={{ opacity: 1, x: 0 }}
           className="flex items-center gap-2 group cursor-pointer"
         >
-          <div className="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center font-serif font-bold text-2xl shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform duration-500">
+          <div className="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center font-serif font-bold text-2xl shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform duration-200">
             S
           </div>
           <span className="font-serif font-bold text-2xl tracking-tight text-ink">
@@ -46,10 +46,10 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
             <a 
               key={link.name}
               href={link.href} 
-              className="text-ink/60 hover:text-primary font-bold text-sm uppercase tracking-widest transition-all duration-300 relative group"
+              className="text-ink/60 hover:text-primary font-bold text-sm uppercase tracking-widest transition-all duration-150 relative group"
             >
               {link.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-150 group-hover:w-full" />
             </a>
           ))}
         </div>
@@ -76,7 +76,7 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
               )}
             </AnimatePresence>
           </motion.button>
-          <button className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest">
+          <button className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest">
             Reservation
           </button>
         </div>
@@ -126,7 +126,7 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
                   {link.name}
                 </motion.a>
              ))}
-             <button className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold mt-4 w-full transition-all duration-300 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest">
+             <button className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold mt-4 w-full transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest">
               Book a Table
             </button>
           </motion.div>
@@ -167,12 +167,12 @@ function Hero() {
           </p>
           
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <button className="w-full sm:w-auto bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
+            <button className="w-full sm:w-auto bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
               Order Now
               <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-5 rounded-2xl hover:bg-white hover:shadow-premium hover:-translate-y-1 transition-all duration-300 font-bold text-ink group text-sm uppercase tracking-widest">
-              <div className="w-14 h-14 rounded-full bg-white shadow-premium flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
+            <button className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-5 rounded-2xl hover:bg-white hover:shadow-premium hover:-translate-y-1 transition-all duration-150 font-bold text-ink group text-sm uppercase tracking-widest">
+              <div className="w-14 h-14 rounded-full bg-white shadow-premium flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-200">
                 <Play className="w-5 h-5 ml-1" />
               </div>
               Watch Our Story
@@ -297,9 +297,9 @@ function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.6 }}
-              className="group text-center p-10 rounded-[2.5rem] bg-paper hover:bg-white transition-all duration-500 shadow-soft hover:shadow-premium hover:-translate-y-2 ring-1 ring-gray-100/50 cursor-pointer"
+              className="group text-center p-10 rounded-[2.5rem] bg-paper hover:bg-white transition-all duration-200 shadow-soft hover:shadow-premium hover:-translate-y-2 ring-1 ring-gray-100/50 cursor-pointer"
             >
-              <div className="w-24 h-24 mx-auto bg-white shadow-premium text-primary rounded-[2rem] flex items-center justify-center mb-8 group-hover:-translate-y-4 transition-transform duration-500 ease-out">
+              <div className="w-24 h-24 mx-auto bg-white shadow-premium text-primary rounded-[2rem] flex items-center justify-center mb-8 group-hover:-translate-y-4 transition-transform duration-200 ease-out">
                 {service.icon}
               </div>
               <h3 className="text-2xl font-bold font-serif mb-4 text-ink group-hover:text-primary transition-colors">{service.title}</h3>
@@ -307,7 +307,7 @@ function Services() {
                 {service.description}
               </p>
               
-              <div className="mt-8 pt-8 border-t border-gray-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="mt-8 pt-8 border-t border-gray-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <span className="text-primary font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
                   Learn More <ArrowRight className="w-4 h-4" />
                 </span>
@@ -335,7 +335,7 @@ function About() {
             <img 
               src="/about/our-story.png" 
               alt="Chef Plating" 
-              className="w-full object-cover aspect-[4/5] group-hover:scale-105 transition-transform duration-1000 ease-in-out"
+              className="w-full object-cover aspect-[4/5] group-hover:scale-105 transition-transform duration-500 ease-in-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent opacity-60" />
           </div>
@@ -390,9 +390,9 @@ function About() {
                 <motion.div 
                   key={i} 
                   whileHover={{ y: -5 }}
-                  className="flex gap-4 p-5 rounded-3xl bg-white shadow-soft hover:shadow-premium transition-all duration-300 border border-gray-100/50 group"
+                  className="flex gap-4 p-5 rounded-3xl bg-white shadow-soft hover:shadow-premium transition-all duration-150 border border-gray-100/50 group"
                 >
-                  <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-orange-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-orange-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-200">
                     <ShieldCheck className="w-6 h-6" />
                   </div>
                   <div>
@@ -403,7 +403,7 @@ function About() {
              ))}
           </div>
 
-          <button className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 flex items-center justify-center gap-2 group text-sm uppercase tracking-widest">
+          <button className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 flex items-center justify-center gap-2 group text-sm uppercase tracking-widest">
             Discover Our Full Story
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
@@ -470,9 +470,9 @@ function PopularMenu() {
               Curated Culinary <span className="text-primary italic">Excellence</span>
             </h2>
           </div>
-          <button className="group flex items-center gap-3 text-ink font-bold hover:text-primary transition-all duration-300 whitespace-nowrap text-sm uppercase tracking-widest">
+          <button className="group flex items-center gap-3 text-ink font-bold hover:text-primary transition-all duration-150 whitespace-nowrap text-sm uppercase tracking-widest">
             Explore Full Menu 
-            <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all duration-300">
+            <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all duration-150">
               <ArrowRight className="w-5 h-5" />
             </div>
           </button>
@@ -488,14 +488,14 @@ function PopularMenu() {
               transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
               className="group"
             >
-              <div className="relative bg-paper rounded-[2.5rem] p-5 transition-all duration-500 shadow-soft hover:shadow-premium-hover border border-gray-100/30 ring-1 ring-gray-100/50 group-hover:-translate-y-3">
+              <div className="relative bg-paper rounded-[2.5rem] p-5 transition-all duration-200 shadow-soft hover:shadow-premium-hover border border-gray-100/30 ring-1 ring-gray-100/50 group-hover:-translate-y-3">
                 <div className="relative mb-6 overflow-hidden rounded-[2rem] aspect-[4/5] shadow-inner ring-1 ring-black/5">
                   <img 
                     src={item.image} 
                     alt={item.name} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-in-out"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                   
                   <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-ink shadow-sm border border-white/20">
                     {item.category}
@@ -505,7 +505,7 @@ function PopularMenu() {
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => addToCart(item)}
-                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 z-20"
+                    className="absolute bottom-4 right-4 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-4 group-hover:translate-y-0 z-20"
                   >
                     <Plus className="w-6 h-6" />
                   </motion.button>
@@ -513,7 +513,7 @@ function PopularMenu() {
 
                 <div className="px-2">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-serif font-bold text-xl text-ink leading-tight pr-2 group-hover:text-primary transition-colors duration-300">{item.name}</h3>
+                    <h3 className="font-serif font-bold text-xl text-ink leading-tight pr-2 group-hover:text-primary transition-colors duration-150">{item.name}</h3>
                     <div className="flex items-center gap-1 text-[10px] font-black text-ink/30 bg-gray-50 px-2 py-1 rounded-full">
                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                       {item.rating}
@@ -521,7 +521,7 @@ function PopularMenu() {
                   </div>
                   
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
-                    <span className="font-serif font-bold text-2xl text-ink group-hover:text-primary transition-colors duration-300">{item.price}</span>
+                    <span className="font-serif font-bold text-2xl text-ink group-hover:text-primary transition-colors duration-150">{item.price}</span>
                     <div className="flex items-center gap-1.5 text-[10px] font-bold text-ink/40 uppercase tracking-widest">
                       <Clock className="w-3.5 h-3.5 text-primary/40" />
                       15 min
@@ -597,7 +597,7 @@ function Footer() {
                 { name: 'Twitter', icon: <Twitter className="w-5 h-5" /> },
                 { name: 'Instagram', icon: <Instagram className="w-5 h-5" /> }
               ].map(social => (
-                 <button key={social.name} className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition-all duration-300 hover:-translate-y-1 text-sm shadow-sm hover:shadow-premium-hover text-white">
+                 <button key={social.name} className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition-all duration-150 hover:-translate-y-1 text-sm shadow-sm hover:shadow-premium-hover text-white">
                    {social.icon}
                  </button>
               ))}
@@ -698,15 +698,15 @@ function Chefs() {
               transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
               className="group text-center"
             >
-              <div className="relative mb-8 overflow-hidden rounded-[2.5rem] aspect-[4/5] shadow-premium ring-1 ring-black/5 group-hover:shadow-premium-hover group-hover:-translate-y-2 transition-all duration-500">
+              <div className="relative mb-8 overflow-hidden rounded-[2.5rem] aspect-[4/5] shadow-premium ring-1 ring-black/5 group-hover:shadow-premium-hover group-hover:-translate-y-2 transition-all duration-200">
                 <img 
                   src={chef.image} 
                   alt={chef.name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-in-out"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-200" />
                 
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-4 group-hover:translate-y-0">
                   <div className="flex gap-4">
                     {[
                       { name: 'Facebook', icon: <Facebook className="w-5 h-5" /> },
@@ -716,7 +716,7 @@ function Chefs() {
                       <motion.button 
                         key={social.name} 
                         whileHover={{ y: -5, backgroundColor: 'var(--color-primary)', color: 'white' }}
-                        className="w-12 h-12 rounded-2xl bg-white text-primary flex items-center justify-center transition-all duration-300 shadow-2xl"
+                        className="w-12 h-12 rounded-2xl bg-white text-primary flex items-center justify-center transition-all duration-150 shadow-2xl"
                       >
                         {social.icon}
                       </motion.button>
@@ -724,7 +724,7 @@ function Chefs() {
                   </div>
                 </div>
               </div>
-              <h3 className="font-serif font-bold text-2xl text-ink mb-2 group-hover:text-primary transition-colors duration-300">{chef.name}</h3>
+              <h3 className="font-serif font-bold text-2xl text-ink mb-2 group-hover:text-primary transition-colors duration-150">{chef.name}</h3>
               <div className="flex items-center justify-center gap-3 mb-3">
                 <span className="w-10 h-[1px] bg-primary/20"></span>
                 <p className="text-primary font-bold text-xs uppercase tracking-[0.2em]">{chef.role}</p>
@@ -777,7 +777,7 @@ function Contact() {
                 <label htmlFor="message" className="block text-sm font-medium text-ink mb-2">Message</label>
                 <textarea id="message" rows={4} className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white transition-colors resize-none" placeholder="Type your message here..."></textarea>
               </div>
-              <button type="button" className="w-full bg-primary hover:brightness-110 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest flex items-center justify-center gap-2">
+              <button type="button" className="w-full bg-primary hover:brightness-110 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest flex items-center justify-center gap-2">
                 Send Message
               </button>
             </form>
@@ -907,7 +907,7 @@ function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                   </div>
                   <button 
                     onClick={onClose}
-                    className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all duration-300 text-sm uppercase tracking-widest"
+                    className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all duration-150 text-sm uppercase tracking-widest"
                   >
                     Explore Menu
                   </button>
@@ -922,8 +922,8 @@ function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                     key={item.id}
                     className="flex gap-5 group"
                   >
-                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden flex-shrink-0 ring-1 ring-gray-100 shadow-soft group-hover:shadow-premium transition-shadow duration-500">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden flex-shrink-0 ring-1 ring-gray-100 shadow-soft group-hover:shadow-premium transition-shadow duration-200">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                       <div>
@@ -982,7 +982,7 @@ function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                 <button 
                   onClick={handleOrder}
                   disabled={isCheckingOut}
-                  className="w-full bg-primary hover:brightness-110 disabled:bg-orange-300 text-white font-bold px-8 py-4 rounded-2xl shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group text-sm uppercase tracking-widest"
+                  className="w-full bg-primary hover:brightness-110 disabled:bg-orange-300 text-white font-bold px-8 py-4 rounded-2xl shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all duration-150 flex items-center justify-center gap-2 group text-sm uppercase tracking-widest"
                 >
                   {isCheckingOut ? (
                     <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
