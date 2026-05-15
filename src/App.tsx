@@ -36,7 +36,7 @@ function Navbar({ onCartClick }: { onCartClick: () => void }) {
             S
           </div>
           <span className="font-serif font-bold text-2xl tracking-tight text-ink">
-            Savoria<span className="text-primary">.</span>
+            Savoria<span className="text-primary italic">.</span>
           </span>
         </motion.div>
 
@@ -160,7 +160,7 @@ function Hero() {
             Culinary Excellence
           </motion.div>
           <h1 className="text-5xl md:text-6xl lg:text-8xl font-serif font-bold leading-[1.05] mb-8 text-ink">
-            Elevate Your <span className="text-primary">Palate</span> with Every Bite
+            Elevate Your <span className="text-primary italic">Palate</span> with Every Bite
           </h1>
           <p className="text-lg md:text-xl text-ink/60 mb-10 max-w-lg leading-relaxed font-medium">
             Experience the art of fine dining delivered to your doorstep. Fresh ingredients, master chefs, and a passion for perfection.
@@ -285,7 +285,7 @@ function Services() {
           >
             What We Offer
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-ink mb-6">Your Favorite Food <span className="text-primary">Delivery Partner</span></h2>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-ink mb-6">Your Favorite Food <span className="text-primary italic">Delivery Partner</span></h2>
           <p className="text-ink/60 text-lg font-medium">We don't just deliver food, we deliver an experience crafted with passion and excellence.</p>
         </div>
 
@@ -356,7 +356,7 @@ function About() {
                 <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] mt-1">Excellence</p>
               </div>
             </div>
-            <p className="text-sm text-ink/60 leading-relaxed">"Our commitment to quality is what defines every single dish we serve at Savoria."</p>
+            <p className="text-sm text-ink/60 leading-relaxed italic">"Our commitment to quality is what defines every single dish we serve at Savoria."</p>
           </motion.div>
           
           {/* Decorative shapes */}
@@ -374,7 +374,7 @@ function About() {
             Our Legacy
           </div>
           <h2 className="text-4xl lg:text-6xl font-serif font-bold text-ink mb-8 leading-[1.1]">
-            We Craft <span className="text-primary">Extraordinary</span> Foodie Experiences
+            We Craft <span className="text-primary italic">Extraordinary</span> Foodie Experiences
           </h2>
           <p className="text-lg text-ink/70 mb-8 leading-relaxed">
             Savoria is more than a restaurant; it's a culinary destination where tradition meets innovation. Our passion for gastronomy is reflected in every meticulously prepared plate.
@@ -467,7 +467,7 @@ function PopularMenu() {
               Exquisite Selection
             </motion.div>
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-ink mb-4 leading-tight">
-              Curated Culinary <span className="text-primary">Excellence</span>
+              Curated Culinary <span className="text-primary italic">Excellence</span>
             </h2>
           </div>
           <button className="group flex items-center gap-3 text-ink font-bold hover:text-primary transition-all duration-300 whitespace-nowrap text-sm uppercase tracking-widest">
