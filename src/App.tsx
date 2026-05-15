@@ -597,7 +597,7 @@ function Footer() {
                 { name: 'Twitter', icon: <Twitter className="w-5 h-5" /> },
                 { name: 'Instagram', icon: <Instagram className="w-5 h-5" /> }
               ].map(social => (
-                 <button key={social.name} className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition-all duration-100 hover:-translate-y-1 text-sm shadow-sm hover:shadow-premium-hover text-white">
+                 <button key={social.name} className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition-all duration-75 hover:-translate-y-1 text-sm shadow-sm hover:shadow-premium-hover text-white">
                    {social.icon}
                  </button>
               ))}
@@ -698,15 +698,15 @@ function Chefs() {
               transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
               className="group text-center"
             >
-              <div className="relative mb-8 overflow-hidden rounded-[2.5rem] aspect-[4/5] shadow-premium ring-1 ring-black/5 group-hover:shadow-premium-hover group-hover:-translate-y-2 transition-all duration-200">
+              <div className="relative mb-8 overflow-hidden rounded-[2.5rem] aspect-[4/5] shadow-premium ring-1 ring-black/5 group-hover:shadow-premium-hover group-hover:-translate-y-2 transition-all duration-500">
                 <img 
                   src={chef.image} 
                   alt={chef.name} 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-200" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
                 
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-4 group-hover:translate-y-0">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
                   <div className="flex gap-4">
                     {[
                       { name: 'Facebook', icon: <Facebook className="w-5 h-5" /> },
@@ -716,7 +716,7 @@ function Chefs() {
                       <motion.button 
                         key={social.name} 
                         whileHover={{ y: -5, backgroundColor: 'var(--color-primary)', color: 'white' }}
-                        className="w-12 h-12 rounded-2xl bg-white text-primary flex items-center justify-center transition-all duration-100 shadow-2xl"
+                        className="w-12 h-12 rounded-2xl bg-white text-primary flex items-center justify-center transition-all duration-75 shadow-2xl"
                       >
                         {social.icon}
                       </motion.button>
