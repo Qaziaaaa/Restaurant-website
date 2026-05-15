@@ -39,11 +39,14 @@ export const addItemToCart = async (
   );
 
   // Check if identical item exists (same item, variant, addons)
-  const existingItemIndex = cart.items.findIndex(item => 
-    item.menuItem.toString() === menuItemId &&
-    item.selectedVariant?.toString() === selectedVariantId &&
-    JSON.stringify(item.selectedAddons.sort()) === JSON.stringify(selectedAddonIds.sort())
-  );
+  const sortedInputAddons = [...selectedAddonIds].sort();
+  
+  const existingItemIndex = cart.items.findIndex(item => {
+    const itemAddons = item.selectedAddons.map(id => id.toString()).sort();
+    return item.menuItem.toString() === menuItemId &&
+           item.selectedVariant?.toString() === selectedVariantId &&
+           JSON.stringify(itemAddons) === JSON.stringify(sortedInputAddons);
+  });
 
   if (existingItemIndex > -1) {
     cart.items[existingItemIndex].quantity += quantity;
@@ -88,6 +91,10 @@ export const updateItemQuantity = async (userId: string, cartItemId: string, qua
 
 export const applyCouponToCart = async (userId: string, couponCode: string) => {
   const cart = await getCartByUserId(userId);
+  
+  // Validate coupon before applying to ensure it exists and is valid for current subtotal
+  await calculateCartTotals(cart.items, couponCode);
+  
   cart.couponCode = couponCode;
   return await recalculateAndSaveCart(cart);
 };

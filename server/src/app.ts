@@ -4,15 +4,18 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import compression from 'compression';
 import { env } from './config/env';
 import { errorHandler, notFound } from './middlewares/errorMiddleware';
 import routes from './routes';
 import logger from './utils/logger';
+import { handleStripeWebhook } from './modules/orders/webhook.controller';
 
 const app: Express = express();
 
 // Security Middlewares
 app.use(helmet());
+app.use(compression());
 app.use(
   cors({
     origin: env.CORS_ORIGIN,
@@ -36,6 +39,8 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Request Parsing
+app.post('/api/v1/orders/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

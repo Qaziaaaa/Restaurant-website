@@ -116,11 +116,28 @@ export const getOrderById = async (userId: string, orderId: string) => {
   return order;
 };
 
-// For Admin Use
-export const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
-  const order = await Order.findByIdAndUpdate(orderId, { orderStatus: status }, { new: true });
+export const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+  const order = await Order.findById(orderId);
   if (!order) {
     throw new Error('Order not found');
   }
+
+  const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+    [OrderStatus.PENDING]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
+    [OrderStatus.CONFIRMED]: [OrderStatus.PREPARING, OrderStatus.CANCELLED],
+    [OrderStatus.PREPARING]: [OrderStatus.READY],
+    [OrderStatus.READY]: [OrderStatus.OUT_FOR_DELIVERY],
+    [OrderStatus.OUT_FOR_DELIVERY]: [OrderStatus.DELIVERED],
+    [OrderStatus.DELIVERED]: [],
+    [OrderStatus.CANCELLED]: [OrderStatus.REFUNDED],
+    [OrderStatus.REFUNDED]: []
+  };
+
+  if (!validTransitions[order.orderStatus].includes(newStatus)) {
+    throw new Error(`Invalid transition from ${order.orderStatus} to ${newStatus}`);
+  }
+
+  order.orderStatus = newStatus;
+  await order.save();
   return order;
 };

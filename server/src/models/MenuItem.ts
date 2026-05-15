@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import slugify from 'slugify';
 
 export interface IVariant {
   name: string;
@@ -30,22 +31,22 @@ export interface IMenuItem extends Document {
 
 const variantSchema = new Schema<IVariant>({
   name: { type: String, required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, required: true, min: [0, 'Price cannot be negative'] },
 });
 
 const addonSchema = new Schema<IAddon>({
   name: { type: String, required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, required: true, min: [0, 'Price cannot be negative'] },
 });
 
 const menuItemSchema = new Schema<IMenuItem>(
   {
     name: { type: String, required: true, trim: true },
-    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    slug: { type: String, unique: true, lowercase: true, trim: true },
     description: { type: String, required: true },
     category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
     images: [{ type: String }],
-    basePrice: { type: Number, required: true },
+    basePrice: { type: Number, required: true, min: [0, 'Base price cannot be negative'] },
     variants: [variantSchema],
     addons: [addonSchema],
     spiceLevel: { type: Number, default: 0, min: 0, max: 3 },
@@ -61,5 +62,11 @@ const menuItemSchema = new Schema<IMenuItem>(
   },
   { timestamps: true }
 );
+
+menuItemSchema.pre('save', function () {
+  if (!this.slug && this.name) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
+});
 
 export default mongoose.model<IMenuItem>('MenuItem', menuItemSchema);

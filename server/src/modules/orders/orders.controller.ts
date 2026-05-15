@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { ApiResponse } from '../../utils/ApiResponse';
 import * as ordersService from './orders.service';
+import { createPaymentIntent } from '../../services/payment.service';
 
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   const { deliveryAddress } = req.body;
@@ -29,4 +30,12 @@ export const getOrderDetails = asyncHandler(async (req: Request, res: Response) 
   const { id } = req.params;
   const order = await ordersService.getOrderById(req.user._id as string, id as string);
   res.json(ApiResponse.success(order, 'Order details fetched'));
+});
+
+export const createPayment = asyncHandler(async (req: Request, res: Response) => {
+  const { orderId } = req.params;
+  const order = await ordersService.getOrderById(req.user._id as string, orderId as string);
+
+  const paymentData = await createPaymentIntent(order as any);
+  res.json(ApiResponse.success(paymentData, 'Payment intent created'));
 });
