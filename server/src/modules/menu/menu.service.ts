@@ -1,4 +1,5 @@
 import MenuItem, { IMenuItem } from '../../models/MenuItem';
+import Category from '../../models/Category';
 import mongoose from 'mongoose';
 
 interface GetMenuParams {
@@ -57,4 +58,18 @@ export const getMenuItems = async (params: GetMenuParams) => {
 export const getMenuItemById = async (id: string) => {
   const item = await MenuItem.findById(id).populate('category', 'name slug').lean();
   return item;
+};
+
+export const createMenuItem = async (data: any) => {
+  const item = await MenuItem.create(data);
+  return item;
+};
+
+export const updateMenuItem = async (id: string, data: any) => {
+  const item = await MenuItem.findByIdAndUpdate(id, data, { new: true });
+  return item;
+};
+
+export const deleteMenuItem = async (id: string) => {
+  await MenuItem.findByIdAndDelete(id);
 };

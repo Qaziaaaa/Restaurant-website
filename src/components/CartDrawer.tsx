@@ -1,22 +1,22 @@
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, X, Trash2, Minus, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 export function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
-  const cartTotal = useCartStore((state) => state.getCartTotal());
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const { cart, removeFromCart, updateQuantity, getCartTotal } = useCartStore();
+  const cartTotal = getCartTotal();
+  const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
 
-  const handleOrder = () => {
-    setIsCheckingOut(true);
-    // TODO: Integrate with backend for real checkout
-    setTimeout(() => {
-      alert("Order placed successfully! Thank you for choosing Savoria.");
-      clearCart();
-      setIsCheckingOut(false);
-      onClose();
-    }, 2000);
+  const handleCheckout = () => {
+    onClose();
+    if (!isAuthenticated) {
+      navigate('/login?redirect=/checkout');
+    } else {
+      navigate('/checkout');
+    }
   };
 
   return (
@@ -75,7 +75,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                     <p className="text-ink/60 leading-relaxed font-medium">Looks like you haven't discovered our delicacies yet.</p>
                   </div>
                   <button 
-                    onClick={onClose}
+                    onClick={() => { onClose(); navigate('/menu'); }}
                     className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all duration-150 text-sm uppercase tracking-widest"
                   >
                     Explore Menu
@@ -88,18 +88,23 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    key={item.id}
+                    key={item._id}
                     className="flex gap-5 group"
                   >
-                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden flex-shrink-0 ring-1 ring-gray-100 shadow-soft group-hover:shadow-premium transition-shadow duration-200">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                    <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden flex-shrink-0 ring-1 ring-gray-100 shadow-soft group-hover:shadow-premium transition-shadow duration-200 bg-gray-100">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop'; }}
+                      />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                       <div>
                         <div className="flex justify-between items-start mb-1">
                           <h4 className="font-bold text-ink truncate pr-2 font-serif text-lg">{item.name}</h4>
                           <button 
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => removeFromCart(item._id)}
                             className="text-gray-300 hover:text-red-500 transition-colors p-1 active:scale-90"
                             aria-label={`Remove ${item.name} from cart`}
                           >
@@ -112,7 +117,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                       <div className="flex items-center justify-between">
                         <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-gray-100">
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item._id, item.quantity - 1)}
                             className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-ink/40 hover:text-ink"
                             aria-label="Decrease quantity"
                           >
@@ -120,7 +125,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                           </button>
                           <span className="w-10 text-center font-black text-sm text-ink" aria-label="Quantity">{item.quantity}</span>
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item._id, item.quantity + 1)}
                             className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-ink/40 hover:text-ink"
                             aria-label="Increase quantity"
                           >
@@ -152,18 +157,11 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                   </div>
                 </div>
                 <button 
-                  onClick={handleOrder}
-                  disabled={isCheckingOut}
-                  className="w-full bg-primary hover:brightness-110 disabled:bg-orange-300 text-white font-bold px-8 py-4 rounded-2xl shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all duration-150 flex items-center justify-center gap-2 group text-sm uppercase tracking-widest"
+                  onClick={handleCheckout}
+                  className="w-full bg-primary hover:brightness-110 text-white font-bold px-8 py-4 rounded-2xl shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all duration-150 flex items-center justify-center gap-2 group text-sm uppercase tracking-widest"
                 >
-                  {isCheckingOut ? (
-                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      Checkout Now
-                      <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
+                  Checkout Now
+                  <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <div className="flex items-center justify-center gap-2 opacity-30 grayscale">
                    <ShieldCheck className="w-4 h-4 text-ink" />

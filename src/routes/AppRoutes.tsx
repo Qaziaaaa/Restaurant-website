@@ -2,8 +2,17 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
-// Lazy load the Home page for better performance
+// Lazy load all pages
 const Home = lazy(() => import('../pages/Home').then(m => ({ default: m.Home })));
+const Login = lazy(() => import('../pages/Login').then(m => ({ default: m.Login })));
+const Signup = lazy(() => import('../pages/Signup').then(m => ({ default: m.Signup })));
+const Profile = lazy(() => import('../pages/Profile').then(m => ({ default: m.Profile })));
+const Menu = lazy(() => import('../pages/Menu').then(m => ({ default: m.Menu })));
+const Checkout = lazy(() => import('../pages/Checkout').then(m => ({ default: m.Checkout })));
+const Orders = lazy(() => import('../pages/Orders').then(m => ({ default: m.Orders })));
+const OrderDetail = lazy(() => import('../pages/OrderDetail').then(m => ({ default: m.OrderDetail })));
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('../pages/ResetPassword'));
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
@@ -12,17 +21,25 @@ const PageLoader = () => (
   </div>
 );
 
+const Wrap = ({ children }: { children: React.ReactNode }) => (
+  <ErrorBoundary>
+    <Suspense fallback={<PageLoader />}>
+      {children}
+    </Suspense>
+  </ErrorBoundary>
+);
+
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: (
-      <ErrorBoundary>
-        <Suspense fallback={<PageLoader />}>
-          <Home />
-        </Suspense>
-      </ErrorBoundary>
-    ),
-  },
+  { path: '/', element: <Wrap><Home /></Wrap> },
+  { path: '/menu', element: <Wrap><Menu /></Wrap> },
+  { path: '/login', element: <Wrap><Login /></Wrap> },
+  { path: '/signup', element: <Wrap><Signup /></Wrap> },
+  { path: '/profile', element: <Wrap><Profile /></Wrap> },
+  { path: '/checkout', element: <Wrap><Checkout /></Wrap> },
+  { path: '/orders', element: <Wrap><Orders /></Wrap> },
+  { path: '/orders/:id', element: <Wrap><OrderDetail /></Wrap> },
+  { path: '/forgot-password', element: <Wrap><ForgotPassword /></Wrap> },
+  { path: '/reset-password/:token', element: <Wrap><ResetPassword /></Wrap> },
   {
     path: '*',
     element: (

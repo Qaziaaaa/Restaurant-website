@@ -39,7 +39,14 @@ export const handleStripeWebhook = asyncHandler(async (req: Request, res: Respon
 async function processSuccessfulPayment(paymentIntent: any) {
   const { orderId, userId } = paymentIntent.metadata;
 
-  // 1. Update Transaction
+  // 1. Check if already processed (Idempotency)
+  const existingTx = await Transaction.findOne({ gatewayTransactionId: paymentIntent.id });
+  if (existingTx && existingTx.status === TransactionStatus.SUCCESS) {
+    logger.info(`Payment already processed for Order: ${orderId}`);
+    return;
+  }
+
+  // 2. Update Transaction
   await Transaction.findOneAndUpdate(
     { gatewayTransactionId: paymentIntent.id },
     { status: TransactionStatus.SUCCESS }

@@ -6,6 +6,9 @@ import { AppError } from '../../middlewares/errorMiddleware';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { setTokenCookies, clearTokenCookies, createSession, logAuthEvent } from './auth.service';
+import crypto from 'crypto';
+import { sendEmail } from '../../utils/mailer';
+
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password, phone } = req.body;
@@ -131,4 +134,67 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
 
 export const getMe = asyncHandler(async (req: Request, res: Response) => {
   res.json(ApiResponse.success(req.user, 'User profile fetched successfully'));
+});
+
+export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    // We return success even if user doesn't exist to prevent email enumeration
+    return res.json(ApiResponse.success(null, 'If that email exists, a reset link has been sent.'));
+  }
+
+  // Generate a random reset token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  
+  // Hash the token and set expiration (10 minutes)
+  user.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+  await user.save({ validateBeforeSave: false });
+
+  // Send the email
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+  const message = `
+    <h1>Password Reset Request</h1>
+    <p>You requested a password reset. Click the link below to reset your password:</p>
+    <a href="${resetUrl}" target="_blank">Reset Password</a>
+    <p>If you didn't request this, you can safely ignore this email.</p>
+    <p>This link will expire in 10 minutes.</p>
+  `;
+
+  try {
+    await sendEmail(user.email, 'Savoria - Password Reset', message);
+    res.json(ApiResponse.success(null, 'If that email exists, a reset link has been sent.'));
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    throw new AppError('There was an error sending the email. Try again later!', 500);
+  }
+});
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  // Hash the incoming token to match the database
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: new Date() },
+  });
+
+  if (!user) {
+    throw new AppError('Token is invalid or has expired', 400);
+  }
+
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  
+  await user.save();
+
+  res.json(ApiResponse.success(null, 'Password has been reset successfully. You can now log in.'));
 });

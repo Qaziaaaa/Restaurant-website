@@ -5,8 +5,8 @@ import { CartItem } from '../types';
 interface CartState {
   cart: CartItem[];
   addToCart: (item: any) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   getCartCount: () => number;
@@ -18,25 +18,37 @@ export const useCartStore = create<CartState>()(
       cart: [],
       addToCart: (item) => {
         set((state) => {
-          const existing = state.cart.find((i) => i.id === item.id);
+          const itemId = item._id || item.id;
+          const existing = state.cart.find((i) => i._id === itemId);
           if (existing) {
             return {
               cart: state.cart.map((i) =>
-                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                i._id === itemId ? { ...i, quantity: i.quantity + 1 } : i
               ),
             };
           }
+          // Handle both backend format (basePrice) and legacy format (price as string)
+          const price = typeof item.basePrice === 'number'
+            ? item.basePrice
+            : typeof item.price === 'number'
+              ? item.price
+              : parseFloat(String(item.price).replace('$', ''));
+          
+          const image = Array.isArray(item.images) && item.images.length > 0
+            ? item.images[0]
+            : item.image || '/menu/placeholder.png';
+
           return {
             cart: [
               ...state.cart,
-              { ...item, quantity: 1, price: parseFloat(item.price.replace('$', '')) },
+              { _id: itemId, name: item.name, price, image, quantity: 1 },
             ],
           };
         });
       },
       removeFromCart: (id) => {
         set((state) => ({
-          cart: state.cart.filter((i) => i.id !== id),
+          cart: state.cart.filter((i) => i._id !== id),
         }));
       },
       updateQuantity: (id, quantity) => {
@@ -45,7 +57,7 @@ export const useCartStore = create<CartState>()(
           return;
         }
         set((state) => ({
-          cart: state.cart.map((i) => (i.id === id ? { ...i, quantity } : i)),
+          cart: state.cart.map((i) => (i._id === id ? { ...i, quantity } : i)),
         }));
       },
       clearCart: () => set({ cart: [] }),

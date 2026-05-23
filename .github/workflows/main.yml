@@ -1,0 +1,41 @@
+name: Production CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        cd server && npm install
+        cd .. && npm install
+
+    - name: TypeScript Check
+      run: |
+        cd server && npm run build
+
+    - name: Lint Check
+      run: |
+        cd server && npm run lint
+
+  deploy-backend:
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to Production
+      run: echo "Deploying to production environment..."
+      # Add your specific deployment commands here (e.g., Fly.io, Render, Railway)

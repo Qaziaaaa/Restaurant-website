@@ -63,6 +63,13 @@ const menuItemSchema = new Schema<IMenuItem>(
   { timestamps: true }
 );
 
+// Indexes for performance
+menuItemSchema.index({ category: 1 });
+menuItemSchema.index({ name: 'text' });
+menuItemSchema.index({ availability: 1 });
+menuItemSchema.index({ featuredFlag: 1 });
+menuItemSchema.index({ basePrice: 1 });
+
 menuItemSchema.pre('save', function () {
   if (!this.slug && this.name) {
     this.slug = slugify(this.name, { lower: true, strict: true });

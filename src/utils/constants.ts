@@ -1,10 +1,9 @@
 export const NAV_LINKS = [
-  { name: 'Home', href: '#home' },
-  { name: 'Our Story', href: '#about' },
-  { name: 'Menu', href: '#menu' },
-  { name: 'Services', href: '#services' },
-  { name: 'Master Chefs', href: '#chefs' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Home', href: '/' },
+  { name: 'Menu', href: '/menu' },
+  { name: 'Our Story', href: '/#about' },
+  { name: 'Services', href: '/#services' },
+  { name: 'Contact', href: '/#contact' },
 ];
 
 export const CONTACT_INFO = {

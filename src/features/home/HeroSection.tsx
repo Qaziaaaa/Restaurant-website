@@ -1,7 +1,9 @@
 import { motion } from 'motion/react';
 import { ArrowRight, Play, Star, Clock, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function HeroSection() {
+  const navigate = useNavigate();
   return (
     <section id="home" className="pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden relative">
       {/* Decorative blobs */}
@@ -32,7 +34,7 @@ export function HeroSection() {
           </p>
           
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <button className="w-full sm:w-auto bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
+            <button onClick={() => navigate('/menu')} className="w-full sm:w-auto bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
               Order Now
               <ArrowRight className="w-5 h-5" />
             </button>

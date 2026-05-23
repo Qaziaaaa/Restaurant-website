@@ -6,14 +6,34 @@ import logger from './utils/logger';
 import { socketService } from './sockets/socket.service';
 import { startWorkers } from './queues/queue.service';
 import mongoose from 'mongoose';
+import Redis from 'ioredis';
+import './models'; // Register all models
 
 // Connect to Database
 connectDB();
 
 const httpServer = http.createServer(app);
 
-// Initialize Socket.io
-socketService.init(httpServer);
+// Setup Redis for Socket.io Scaling (Optional)
+const isRedisDisabled = process.env.DISABLE_REDIS === 'true';
+let pubClient: any = null;
+let subClient: any = null;
+
+if (!isRedisDisabled) {
+  const redisOptions: any = {
+    maxRetriesPerRequest: 0,
+    connectTimeout: 500,
+    lazyConnect: true,
+    enableOfflineQueue: false,
+  };
+  pubClient = new Redis(env.REDIS_URL, redisOptions);
+  subClient = new Redis(env.REDIS_URL, redisOptions);
+  pubClient.on('error', () => {});
+  subClient.on('error', () => {});
+}
+
+// Initialize Socket.io (Standalone mode if Redis is disabled or fails)
+socketService.init(httpServer, pubClient, subClient);
 
 // Start Background Job Workers
 startWorkers();
@@ -42,6 +62,11 @@ const shutdown = async () => {
     try {
       await mongoose.connection.close();
       logger.info('Database connection closed.');
+      
+      if (pubClient) pubClient.disconnect();
+      if (subClient) subClient.disconnect();
+      if (pubClient || subClient) logger.info('Redis connections closed.');
+      
       process.exit(0);
     } catch (err) {
       logger.error('Error during shutdown:', err);

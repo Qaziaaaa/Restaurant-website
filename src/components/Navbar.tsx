@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, Menu as MenuIcon, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShoppingCart, Menu as MenuIcon, X, User } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { NAV_LINKS } from '../utils/constants';
+import { useNavigate } from 'react-router-dom';
 
 export function Navbar({ onCartClick }: { onCartClick: () => void }) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const cartCount = useCartStore((state) => state.getCartCount());
+  const { isAuthenticated, user } = useAuthStore();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -35,19 +40,31 @@ export function Navbar({ onCartClick }: { onCartClick: () => void }) {
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center gap-10">
           {NAV_LINKS.map((link) => (
-            <a 
+            <Link 
               key={link.name}
-              href={link.href} 
+              to={link.href} 
               className="text-ink/60 hover:text-primary font-bold text-sm uppercase tracking-widest transition-all duration-150 relative group"
             >
               {link.name}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-150 group-hover:w-full" />
-            </a>
+            </Link>
           ))}
         </div>
 
         {/* Actions */}
         <div className="hidden md:flex items-center gap-6">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
+            className="flex items-center gap-2 px-4 py-3 bg-paper rounded-2xl shadow-soft hover:shadow-premium ring-1 ring-gray-100 transition-all text-ink hover:text-primary"
+          >
+            <User className="w-5 h-5" />
+            <span className="text-xs font-bold uppercase tracking-widest">
+              {isAuthenticated ? (user?.role === 'admin' ? 'Admin' : user?.name.split(' ')[0]) : 'Login'}
+            </span>
+          </motion.button>
+
           <motion.button 
             aria-label="Open Cart"
             whileHover={{ scale: 1.05 }}
@@ -108,21 +125,48 @@ export function Navbar({ onCartClick }: { onCartClick: () => void }) {
             transition={{ duration: 0.4, ease: "circOut" }}
             className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-premium py-8 px-6 flex flex-col gap-6 overflow-hidden z-40"
           >
+             <motion.button 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate(isAuthenticated ? '/profile' : '/login');
+                }}
+                className="flex items-center gap-3 text-2xl font-serif font-bold text-ink hover:text-primary transition-colors py-2"
+             >
+                <User className="w-6 h-6 text-primary" />
+                {isAuthenticated ? 'My Profile' : 'Login / Register'}
+             </motion.button>
+
              {NAV_LINKS.map((link, idx) => (
-                <motion.a 
+                <motion.div 
                   key={link.name}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  href={link.href} 
-                  onClick={() => setIsOpen(false)} 
-                  className="text-2xl font-serif font-bold text-ink hover:text-primary transition-colors py-2"
                 >
-                  {link.name}
-                </motion.a>
+                  <Link
+                    to={link.href}
+                    onClick={() => setIsOpen(false)} 
+                    className="text-2xl font-serif font-bold text-ink hover:text-primary transition-colors py-2 block"
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
              ))}
-             <button className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold mt-4 w-full transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest">
-              Book a Table
+             {isAuthenticated && (
+               <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+                 <Link
+                   to="/orders"
+                   onClick={() => setIsOpen(false)}
+                   className="text-2xl font-serif font-bold text-ink hover:text-primary transition-colors py-2 block"
+                 >
+                   My Orders
+                 </Link>
+               </motion.div>
+             )}
+             <button onClick={() => { setIsOpen(false); navigate('/menu'); }} className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold mt-4 w-full transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest">
+              Order Now
             </button>
           </motion.div>
         )}

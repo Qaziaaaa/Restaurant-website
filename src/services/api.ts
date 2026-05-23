@@ -1,20 +1,37 @@
 import axios from 'axios';
+import { useAuthStore } from '../store/useAuthStore';
 
 // Create an Axios instance for API calls
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://api.example.com/v1',
+  baseURL: 'http://localhost:5000/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
-// Add interceptors for error handling, auth, etc.
+// Request interceptor for adding auth token
+api.interceptors.request.use((config) => {
+  const { accessToken } = useAuthStore.getState();
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+
+// Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // TODO: Handle global errors like 401 Unauthorized
-    console.error('API Error:', error);
-    return Promise.reject(error);
+    const message = error.response?.data?.message || 'Something went wrong';
+    
+    // Handle 401 Unauthorized
+    if (error.response?.status === 401) {
+      // Potentially refresh token or logout
+      useAuthStore.getState().logout();
+    }
+    
+    return Promise.reject(new Error(message));
   }
 );

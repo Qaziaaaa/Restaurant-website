@@ -90,6 +90,13 @@ const orderSchema = new Schema<IOrder>(
   }
 );
 
+// Indexes for performance
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ orderStatus: 1 });
+orderSchema.index({ paymentStatus: 1 });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ orderNumber: 1 });
+
 // TODO: Future Payment Integration Hook
 // orderSchema.post('save', async function(doc) { ... });
 

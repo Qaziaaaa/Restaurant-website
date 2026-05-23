@@ -1,44 +1,21 @@
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { FoodCard } from '../../components/FoodCard';
-import { MenuItem } from '../../types';
-
-const menuItems: MenuItem[] = [
-  {
-    id: 1,
-    name: "Signature Truffle Burger",
-    image: "/menu/burger.png",
-    price: "$18.99",
-    rating: 5.0,
-    category: "Signature"
-  },
-  {
-    id: 2,
-    name: "Artisan Margherita",
-    image: "/menu/pizza.png",
-    price: "$16.50",
-    rating: 4.9,
-    category: "Stone Baked"
-  },
-  {
-    id: 3,
-    name: "Glazed Salmon Bowl",
-    image: "/menu/salmon-salad.png",
-    price: "$22.00",
-    rating: 4.8,
-    category: "Healthy"
-  },
-  {
-    id: 4,
-    name: "Szechuan Fire Noodles",
-    image: "/menu/spicy-noodles.png",
-    price: "$15.25",
-    rating: 4.7,
-    category: "Asian Fusion"
-  }
-];
+import { menuService } from '../../services/menu.service';
+import { useNavigate } from 'react-router-dom';
 
 export function PopularMenuSection() {
+  const navigate = useNavigate();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['featured-menu'],
+    queryFn: () => menuService.getFeaturedItems(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const menuItems = data?.items || [];
+
   return (
     <section id="menu" className="py-24 bg-white relative overflow-hidden" aria-labelledby="menu-heading">
       {/* Decorative background element */}
@@ -59,7 +36,10 @@ export function PopularMenuSection() {
               Curated Culinary <span className="text-primary italic">Excellence</span>
             </h2>
           </div>
-          <button className="group flex items-center gap-3 text-ink font-bold hover:text-primary transition-all duration-150 whitespace-nowrap text-sm uppercase tracking-widest">
+          <button 
+            onClick={() => navigate('/menu')}
+            className="group flex items-center gap-3 text-ink font-bold hover:text-primary transition-all duration-150 whitespace-nowrap text-sm uppercase tracking-widest"
+          >
             Explore Full Menu 
             <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all duration-150">
               <ArrowRight className="w-5 h-5" />
@@ -67,11 +47,29 @@ export function PopularMenuSection() {
           </button>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          {menuItems.map((item, idx) => (
-            <FoodCard key={item.id} item={item} index={idx} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-paper rounded-[2.5rem] p-5 animate-pulse">
+                <div className="rounded-[2rem] aspect-[4/5] bg-gray-200 mb-6" />
+                <div className="px-2 space-y-3">
+                  <div className="h-6 bg-gray-200 rounded-lg w-3/4" />
+                  <div className="h-8 bg-gray-200 rounded-lg w-1/3 mt-4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : menuItems.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {menuItems.map((item: any, idx: number) => (
+              <FoodCard key={item._id} item={item} index={idx} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 text-ink/40">
+            <p className="text-lg font-medium">Menu items coming soon...</p>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://savoria-restaurant.com/sitemap.xml

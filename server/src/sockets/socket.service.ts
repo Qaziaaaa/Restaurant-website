@@ -1,6 +1,9 @@
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
+import Redis from 'ioredis';
 import logger from '../utils/logger';
+import { verifyAccessToken } from '../utils/jwt';
 
 export class SocketService {
   private static instance: SocketService;
@@ -15,7 +18,7 @@ export class SocketService {
     return SocketService.instance;
   }
 
-  public init(server: HttpServer) {
+  public init(server: HttpServer, pubClient: Redis | null, subClient: Redis | null) {
     this.io = new Server(server, {
       cors: {
         origin: process.env.CORS_ORIGIN || '*',
@@ -23,17 +26,39 @@ export class SocketService {
       },
     });
 
+    // Redis Adapter for Scaling (Only if Redis is connected)
+    if (pubClient && (pubClient as any).status === 'ready') {
+      this.io.adapter(createAdapter(pubClient, subClient!));
+      logger.info('Socket.io Redis adapter initialized');
+    } else {
+      logger.warn('⚠️ Socket.io running in Standalone Mode (No Redis)');
+    }
+
+    // Authentication Middleware
+    this.io.use((socket, next) => {
+      const token = socket.handshake.auth.token;
+      if (!token) {
+        return next(new Error('Authentication error: Token missing'));
+      }
+      try {
+        const decoded = verifyAccessToken(token) as any;
+        (socket as any).userId = decoded.id;
+        next();
+      } catch (err) {
+        next(new Error('Authentication error: Invalid token'));
+      }
+    });
+
     this.io.on('connection', (socket: Socket) => {
-      logger.info(`Socket connected: ${socket.id}`);
+      const userId = (socket as any).userId;
+      logger.info(`Socket authenticated: ${socket.id} (User: ${userId})`);
 
-      // Join a room for the user to receive private updates
-      socket.on('join_user_room', (userId: string) => {
-        socket.join(`user_${userId}`);
-        logger.info(`Socket ${socket.id} joined user room: user_${userId}`);
-      });
+      // Automatically join the user's private room
+      socket.join(`user_${userId}`);
 
-      // Join admin room for kitchen/management notifications
+      // Join admin room for staff (In real app, check user role here)
       socket.on('join_admin_room', () => {
+        // TODO: Role check
         socket.join('admin_room');
         logger.info(`Socket ${socket.id} joined admin room`);
       });

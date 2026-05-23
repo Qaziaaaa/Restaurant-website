@@ -6,13 +6,19 @@ class CacheService {
   private readonly DEFAULT_TTL = 3600; // 1 hour
 
   constructor() {
+    if (process.env.DISABLE_REDIS === 'true') {
+      logger.info('Redis is disabled via environment flag.');
+      return;
+    }
     try {
       this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
         maxRetriesPerRequest: 3,
       });
 
       this.redis.on('error', (err) => {
-        logger.error('Redis connection error:', err);
+        if (err.code !== 'ECONNREFUSED') {
+          logger.error('Redis error:', err);
+        }
       });
 
       this.redis.on('connect', () => {
@@ -55,6 +61,11 @@ class CacheService {
   public async flush(): Promise<void> {
     if (!this.redis) return;
     await this.redis.flushall();
+  }
+
+  public getStatus(): string {
+    if (!this.redis) return 'not_initialized';
+    return this.redis.status; // 'connecting', 'connect', 'ready', 'end', 'wait'
   }
 }
 
