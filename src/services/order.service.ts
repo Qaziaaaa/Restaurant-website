@@ -22,7 +22,7 @@ export const orderService = {
 
   getMyOrders: async (): Promise<Order[]> => {
     const response = await api.get('/orders');
-    return response.data.data;
+    return response.data.data.orders;
   },
 
   getOrderById: async (id: string): Promise<Order> => {

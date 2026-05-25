@@ -1,16 +1,29 @@
 import { useState } from 'react';
-import { ChefHat, Lock, Mail, ArrowRight } from 'lucide-react';
+import { ChefHat, Lock, Mail, ArrowRight, AlertTriangle } from 'lucide-react';
+import api from '../lib/api';
+import { useAuthStore } from '../store/useAuthStore';
 
 export default function LoginPage() {
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    // Simulate login
-    setTimeout(() => {
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      const { data } = response.data;
+      setAuth({ id: data._id, name: data.name, email: data.email, role: data.role }, data.accessToken);
       window.location.href = '/';
-    }, 1000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +44,12 @@ export default function LoginPage() {
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-slate-900 py-8 px-4 shadow-2xl sm:rounded-3xl sm:px-10 border border-slate-800 backdrop-blur-sm bg-opacity-80">
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3">
+              <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
+              <p className="text-sm font-medium text-red-400">{error}</p>
+            </div>
+          )}
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-slate-300 mb-2">
@@ -45,6 +64,8 @@ export default function LoginPage() {
                   name="email"
                   type="email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@restaurant.com"
                   className="appearance-none block w-full pl-11 pr-4 py-3 border border-slate-800 rounded-xl bg-slate-950 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-sm"
                 />
@@ -64,6 +85,8 @@ export default function LoginPage() {
                   name="password"
                   type="password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="appearance-none block w-full pl-11 pr-4 py-3 border border-slate-800 rounded-xl bg-slate-950 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all text-sm"
                 />

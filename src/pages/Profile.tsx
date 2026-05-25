@@ -6,7 +6,7 @@ import { User, Mail, Shield, LogOut, Package, ChevronRight, UtensilsCrossed } fr
 import { orderService } from '../services/order.service';
 import { Navbar } from '../components/Navbar';
 import { CartDrawer } from '../components/CartDrawer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function Profile() {
   const { user, logout, isAuthenticated } = useAuthStore();
@@ -19,13 +19,18 @@ export function Profile() {
     enabled: isAuthenticated,
   });
 
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
   if (!user) {
-    navigate('/login');
     return null;
   }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, Package, MapPin, Clock, Check, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -30,8 +30,13 @@ export function OrderDetail() {
     enabled: !!id && isAuthenticated,
   });
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
   if (!isAuthenticated) {
-    navigate('/login');
     return null;
   }
 
