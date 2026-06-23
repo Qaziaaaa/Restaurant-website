@@ -179,7 +179,7 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
   const { password } = req.body;
 
   // Hash the incoming token to match the database
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  const hashedToken = crypto.createHash('sha256').update(String(token)).digest('hex');
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,

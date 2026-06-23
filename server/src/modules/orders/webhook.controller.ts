@@ -65,11 +65,13 @@ async function processSuccessfulPayment(paymentIntent: any) {
     socketService.emitToAdmin('new_paid_order', { orderId });
 
     // 4. Queue Email Confirmation
-    await emailQueue.add('order_confirmation', {
-      to: 'customer@example.com', // Get from user model in real app
-      orderId,
-      total: order.pricingBreakdown.total,
-    });
+    if (emailQueue) {
+      await emailQueue.add('order_confirmation', {
+        to: 'customer@example.com',
+        orderId,
+        total: order.pricingBreakdown.total,
+      });
+    }
   }
 
   logger.info(`Payment succeeded for Order: ${orderId}`);

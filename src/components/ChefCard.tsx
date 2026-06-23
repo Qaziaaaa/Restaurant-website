@@ -5,6 +5,7 @@ import { Chef } from '../types';
 interface ChefCardProps {
   chef: Chef;
   index?: number;
+  key?: string | number;
 }
 
 export function ChefCard({ chef, index = 0 }: ChefCardProps) {

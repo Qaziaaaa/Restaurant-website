@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { Lock, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ export default function ResetPassword() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (password.length < 6) {
       setStatus('error');

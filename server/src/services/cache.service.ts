@@ -15,7 +15,7 @@ class CacheService {
         maxRetriesPerRequest: 3,
       });
 
-      this.redis.on('error', (err) => {
+      this.redis.on('error', (err: any) => {
         if (err.code !== 'ECONNREFUSED') {
           logger.error('Redis error:', err);
         }

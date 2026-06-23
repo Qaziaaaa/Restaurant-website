@@ -5,6 +5,7 @@ import { useCartStore } from '../store/useCartStore';
 interface FoodCardProps {
   item: any;
   index?: number;
+  key?: string | number;
 }
 
 export function FoodCard({ item, index = 0 }: FoodCardProps) {

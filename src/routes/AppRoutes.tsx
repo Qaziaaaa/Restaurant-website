@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, type ReactNode } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
 // Lazy load all pages
@@ -21,7 +21,7 @@ const PageLoader = () => (
   </div>
 );
 
-const Wrap = ({ children }: { children: React.ReactNode }) => (
+const Wrap = ({ children }: { children: ReactNode }) => (
   <ErrorBoundary>
     <Suspense fallback={<PageLoader />}>
       {children}
