@@ -1,14 +1,43 @@
-import { useState } from 'react';
-import { ChefHat, Lock, Mail, ArrowRight, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChefHat, Lock, Mail, ArrowRight, AlertTriangle, Loader2 } from 'lucide-react';
 import api from '../lib/api';
 import { useAuthStore } from '../store/useAuthStore';
 
 export default function LoginPage() {
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const { setAuth, isAuthenticated } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get('/auth/me');
+        const user = res.data.data;
+        if (user && ['admin', 'manager', 'chef'].includes(user.role)) {
+          setAuth(
+            { id: user._id, name: user.name, email: user.email, role: user.role },
+            res.data.data.accessToken || ''
+          );
+          window.location.href = '/admin/';
+          return;
+        }
+      } catch {
+        // No valid session
+      }
+      setCheckingSession(false);
+    })();
+  }, []);
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+      </div>
+    );
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +47,7 @@ export default function LoginPage() {
       const response = await api.post('/auth/login', { email, password });
       const { data } = response.data;
       setAuth({ id: data._id, name: data.name, email: data.email, role: data.role }, data.accessToken);
-      window.location.href = '/';
+      window.location.href = '/admin/';
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {

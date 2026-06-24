@@ -10,7 +10,7 @@ import Redis from 'ioredis';
 import './models'; // Register all models
 
 // Setup Redis for Socket.io Scaling (Optional)
-const isRedisDisabled = process.env.DISABLE_REDIS === 'true';
+const isRedisDisabled = env.DISABLE_REDIS === 'true';
 let pubClient: any = null;
 let subClient: any = null;
 
@@ -41,7 +41,9 @@ const startServer = async () => {
 
   const server = httpServer.listen(env.PORT, () => {
     logger.info(`Server running in ${env.NODE_ENV} mode on port ${env.PORT}`);
-    console.log(`Server running on port ${env.PORT}`);
+    console.log(`\n  🚀  Server running on http://localhost:${env.PORT}`);
+    console.log(`  📋  Admin dashboard at http://localhost:${env.PORT}/admin`);
+    console.log(`  🍽️   Frontend at http://localhost:3000\n`);
   });
 
   return server;

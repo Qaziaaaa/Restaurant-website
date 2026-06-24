@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
+import path from 'path';
 import { env } from './config/env';
 import { errorHandler, notFound } from './middlewares/errorMiddleware';
 import routes from './routes';
@@ -106,6 +107,13 @@ app.get('/api/v1/metrics', async (req: Request, res: Response) => {
 
 // API Routes
 app.use('/api/v1', routes);
+
+// Admin Dashboard (built separately via cd apps/admin-dashboard && npm run build)
+const adminDistPath = path.resolve(__dirname, '../../apps/admin-dashboard/dist');
+app.use('/admin', express.static(adminDistPath));
+app.get('/admin{/*path}', (req: Request, res: Response) => {
+  res.sendFile(path.join(adminDistPath, 'index.html'));
+});
 
 // Error Handling
 app.use(notFound);

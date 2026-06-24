@@ -14,6 +14,8 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(1, 'JWT_REFRESH_SECRET is required'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
+  FRONTEND_URL: z.string().default('http://localhost:3000'),
+  DISABLE_REDIS: z.enum(['true', 'false']).default('false'),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
 });

@@ -26,7 +26,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   private handleReset = () => {
     this.setState({ hasError: false, error: null });
-    window.location.href = '/';
+    window.location.href = '/admin/';
   };
 
   public render() {
@@ -47,7 +47,7 @@ class ErrorBoundary extends Component<Props, State> {
               </code>
             </div>
             <button
-              onClick={handleReset}
+              onClick={this.handleReset}
               className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all"
             >
               <RefreshCcw className="h-4 w-4" />

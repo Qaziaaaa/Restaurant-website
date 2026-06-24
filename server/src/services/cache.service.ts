@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import { env } from '../config/env';
 import logger from '../utils/logger';
 
 class CacheService {
@@ -6,7 +7,7 @@ class CacheService {
   private readonly DEFAULT_TTL = 3600; // 1 hour
 
   constructor() {
-    if (process.env.DISABLE_REDIS === 'true') {
+    if (env.DISABLE_REDIS === 'true') {
       logger.info('Redis is disabled via environment flag.');
       return;
     }

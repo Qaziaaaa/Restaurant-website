@@ -29,4 +29,9 @@ export const orderService = {
     const response = await api.get(`/orders/${id}`);
     return response.data.data;
   },
+
+  createPaymentIntent: async (orderId: string): Promise<{ clientSecret: string; paymentIntentId: string }> => {
+    const response = await api.post(`/orders/${orderId}/payment`);
+    return response.data.data;
+  },
 };

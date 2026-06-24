@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu as MenuIcon, X, User } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { NAV_LINKS } from '../utils/constants';
-import { useNavigate } from 'react-router-dom';
 
 export function Navbar({ onCartClick }: { onCartClick: () => void }) {
   const navigate = useNavigate();
@@ -53,6 +52,14 @@ export function Navbar({ onCartClick }: { onCartClick: () => void }) {
 
         {/* Actions */}
         <div className="hidden md:flex items-center gap-6">
+          {isAuthenticated && user && ['admin', 'manager', 'chef'].includes(user.role) && (
+            <Link
+              to="/admin"
+              className="flex items-center gap-2 px-4 py-3 bg-primary/10 text-primary rounded-2xl shadow-soft hover:shadow-premium ring-1 ring-primary/20 transition-all text-xs font-bold uppercase tracking-widest hover:bg-primary/20"
+            >
+              Admin Panel
+            </Link>
+          )}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -154,7 +161,7 @@ export function Navbar({ onCartClick }: { onCartClick: () => void }) {
                   </Link>
                 </motion.div>
              ))}
-             {isAuthenticated && (
+              {isAuthenticated && (
                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                  <Link
                    to="/orders"
@@ -164,7 +171,18 @@ export function Navbar({ onCartClick }: { onCartClick: () => void }) {
                    My Orders
                  </Link>
                </motion.div>
-             )}
+              )}
+              {isAuthenticated && user && ['admin', 'manager', 'chef'].includes(user.role) && (
+               <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}>
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsOpen(false)}
+                    className="text-2xl font-serif font-bold text-primary hover:text-primary/80 transition-colors py-2 block"
+                  >
+                    Admin Panel →
+                  </Link>
+                </motion.div>
+              )}
              <button onClick={() => { setIsOpen(false); navigate('/menu'); }} className="bg-primary hover:brightness-110 text-white px-8 py-4 rounded-2xl font-bold mt-4 w-full transition-all duration-150 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 text-sm uppercase tracking-widest">
               Order Now
             </button>

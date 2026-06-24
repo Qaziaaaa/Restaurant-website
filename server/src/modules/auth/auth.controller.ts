@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '../../utils/asyncHandler';
 import User from '../../models/User';
+import { UserRole } from '../../constants';
 import Session from '../../models/Session';
 import { AppError } from '../../middlewares/errorMiddleware';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { setTokenCookies, clearTokenCookies, createSession, logAuthEvent } from './auth.service';
 import crypto from 'crypto';
+import { env } from '../../config/env';
 import { sendEmail } from '../../utils/mailer';
 
 
@@ -18,18 +20,30 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
     throw new AppError('User already exists', 400);
   }
 
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+
   const user = await User.create({
     name,
     email,
     password,
     phone,
+    verificationToken: crypto.createHash('sha256').update(verificationToken).digest('hex'),
   });
 
-  const accessToken = generateAccessToken(user._id.toString());
-  const refreshToken = generateRefreshToken(user._id.toString());
+  const verifyUrl = `${env.FRONTEND_URL}/verify-email/${verificationToken}`;
+  const message = `
+    <h1>Welcome to Savoria!</h1>
+    <p>Thank you for registering. Please verify your email by clicking the link below:</p>
+    <a href="${verifyUrl}" target="_blank">Verify Email</a>
+    <p>This link will expire in 24 hours.</p>
+  `;
 
-  await createSession(user._id.toString(), refreshToken, req.ip, req.get('user-agent'));
-  setTokenCookies(res, accessToken, refreshToken);
+  try {
+    await sendEmail(user.email, 'Savoria - Verify Your Email', message);
+  } catch (err) {
+    // If email fails, still create user but log error
+    console.error('Failed to send verification email:', err);
+  }
 
   await logAuthEvent('REGISTER', user._id.toString(), req.ip, req.get('user-agent'));
 
@@ -40,9 +54,8 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        accessToken,
       },
-      'User registered successfully'
+      'User registered successfully. Please check your email to verify your account.'
     )
   );
 });
@@ -51,16 +64,29 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email }).select('+password');
+
+  if (user && user.isLocked()) {
+    const remaining = Math.ceil((user.lockUntil!.getTime() - Date.now()) / 60000);
+    throw new AppError(`Account locked. Try again in ${remaining} minutes`, 429);
+  }
+
   if (!user || !(await user.comparePassword(password))) {
+    if (user) {
+      await user.incrementLoginAttempts();
+    }
     await logAuthEvent('LOGIN_FAILED', undefined, req.ip, req.get('user-agent'), { email });
     throw new AppError('Invalid email or password', 401);
   }
 
+  if (!user.isVerified && user.role !== UserRole.ADMIN) {
+    throw new AppError('Please verify your email before logging in', 403);
+  }
+
+  await user.resetLoginAttempts();
+
   const accessToken = generateAccessToken(user._id.toString());
   const refreshToken = generateRefreshToken(user._id.toString());
 
-  // Clear any existing sessions if you want single-device login, 
-  // or just create a new one for multi-device support.
   await createSession(user._id.toString(), refreshToken, req.ip, req.get('user-agent'));
   setTokenCookies(res, accessToken, refreshToken);
 
@@ -154,7 +180,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
   await user.save({ validateBeforeSave: false });
 
   // Send the email
-  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+  const resetUrl = `${env.FRONTEND_URL}/reset-password/${resetToken}`;
   const message = `
     <h1>Password Reset Request</h1>
     <p>You requested a password reset. Click the link below to reset your password:</p>
@@ -197,4 +223,57 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
   await user.save();
 
   res.json(ApiResponse.success(null, 'Password has been reset successfully. You can now log in.'));
+});
+
+export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
+  const { token } = req.params;
+
+  const hashedToken = crypto.createHash('sha256').update(String(token)).digest('hex');
+  const user = await User.findOne({
+    verificationToken: hashedToken,
+  });
+
+  if (!user) {
+    throw new AppError('Invalid or expired verification token', 400);
+  }
+
+  user.isVerified = true;
+  user.verificationToken = undefined;
+  await user.save();
+
+  res.json(ApiResponse.success(null, 'Email verified successfully. You can now log in.'));
+});
+
+export const resendVerification = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.json(ApiResponse.success(null, 'If that email exists, a verification link has been sent.'));
+  }
+
+  if (user.isVerified) {
+    return res.json(ApiResponse.success(null, 'Email is already verified. You can log in.'));
+  }
+
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  user.verificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+  await user.save({ validateBeforeSave: false });
+
+  const verifyUrl = `${env.FRONTEND_URL}/verify-email/${verificationToken}`;
+  const message = `
+    <h1>Email Verification</h1>
+    <p>Click the link below to verify your email:</p>
+    <a href="${verifyUrl}" target="_blank">Verify Email</a>
+    <p>This link will expire in 24 hours.</p>
+  `;
+
+  try {
+    await sendEmail(user.email, 'Savoria - Verify Your Email', message);
+    res.json(ApiResponse.success(null, 'If that email exists, a verification link has been sent.'));
+  } catch (err) {
+    user.verificationToken = undefined;
+    await user.save({ validateBeforeSave: false });
+    throw new AppError('There was an error sending the email. Try again later!', 500);
+  }
 });

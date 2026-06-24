@@ -2,6 +2,7 @@ import Order, { IOrder, OrderStatus, PaymentStatus } from '../../models/Order';
 import Cart from '../../models/Cart';
 import MenuItem from '../../models/MenuItem';
 import mongoose from 'mongoose';
+import { socketService } from '../../sockets/socket.service';
 
 const generateOrderNumber = () => {
   const prefix = 'ORD';
@@ -86,6 +87,42 @@ export const createOrderFromCart = async (
   return order;
 };
 
+export const createOrderFromItems = async (
+  userId: string,
+  items: any[],
+  deliveryAddress: IOrder['deliveryAddress']
+) => {
+  const orderNumber = generateOrderNumber();
+  const subtotal = items.reduce((sum, item) => sum + (item.itemTotal || item.priceSnapshot * item.quantity), 0);
+  const tax = subtotal * 0.1;
+  const total = subtotal + tax;
+
+  const order = await Order.create({
+    orderNumber,
+    user: userId,
+    items: items.map((item) => ({
+      menuItem: item.menuItem,
+      nameSnapshot: item.nameSnapshot,
+      quantity: item.quantity,
+      priceSnapshot: item.priceSnapshot,
+      selectedAddons: item.selectedAddons || [],
+      selectedVariant: item.selectedVariant,
+      itemTotal: item.itemTotal || item.priceSnapshot * item.quantity,
+    })),
+    pricingBreakdown: {
+      subtotal,
+      tax,
+      discount: 0,
+      total,
+    },
+    deliveryAddress,
+    paymentStatus: PaymentStatus.PENDING,
+    orderStatus: OrderStatus.PENDING,
+  });
+
+  return order;
+};
+
 export const getUserOrders = async (userId: string, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
   const [orders, total] = await Promise.all([
@@ -139,5 +176,8 @@ export const updateOrderStatus = async (orderId: string, newStatus: OrderStatus)
 
   order.orderStatus = newStatus;
   await order.save();
+
+  socketService.emitOrderUpdate(order.user.toString(), order._id.toString(), newStatus);
+
   return order;
 };

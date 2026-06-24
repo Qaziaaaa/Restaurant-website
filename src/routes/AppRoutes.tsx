@@ -13,11 +13,28 @@ const Orders = lazy(() => import('../pages/Orders').then(m => ({ default: m.Orde
 const OrderDetail = lazy(() => import('../pages/OrderDetail').then(m => ({ default: m.OrderDetail })));
 const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('../pages/ResetPassword'));
+const VerifyEmail = lazy(() => import('../pages/VerifyEmail').then(m => ({ default: m.VerifyEmail })));
+
+// Admin pages
+const AdminGuard = lazy(() => import('../components/admin/AdminGuard').then(m => ({ default: m.AdminGuard })));
+const DashboardPage = lazy(() => import('../pages/admin/DashboardPage'));
+const OrdersPage = lazy(() => import('../pages/admin/OrdersPage'));
+const KitchenPage = lazy(() => import('../pages/admin/KitchenPage'));
+const MenuPage = lazy(() => import('../pages/admin/MenuPage'));
+const StaffPage = lazy(() => import('../pages/admin/StaffPage'));
+const AnalyticsPage = lazy(() => import('../pages/admin/AnalyticsPage'));
+const SettingsPage = lazy(() => import('../pages/admin/SettingsPage'));
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+  </div>
+);
+
+const AdminLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-950">
+    <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
   </div>
 );
 
@@ -40,6 +57,26 @@ const router = createBrowserRouter([
   { path: '/orders/:id', element: <Wrap><OrderDetail /></Wrap> },
   { path: '/forgot-password', element: <Wrap><ForgotPassword /></Wrap> },
   { path: '/reset-password/:token', element: <Wrap><ResetPassword /></Wrap> },
+  { path: '/verify-email/:token', element: <Wrap><VerifyEmail /></Wrap> },
+  {
+    path: '/admin',
+    element: (
+      <ErrorBoundary>
+        <Suspense fallback={<AdminLoader />}>
+          <AdminGuard />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+    children: [
+      { index: true, element: <DashboardPage /> },
+      { path: 'orders', element: <OrdersPage /> },
+      { path: 'kitchen', element: <KitchenPage /> },
+      { path: 'menu', element: <MenuPage /> },
+      { path: 'staff', element: <StaffPage /> },
+      { path: 'analytics', element: <AnalyticsPage /> },
+      { path: 'settings', element: <SettingsPage /> },
+    ],
+  },
   {
     path: '*',
     element: (

@@ -26,6 +26,7 @@ const navigation = [
 
 export default function Sidebar() {
   const location = useLocation();
+  const pathname = '/' + location.pathname.split('/').slice(2).join('/');
 
   return (
     <div className="hidden lg:flex lg:flex-shrink-0">
@@ -40,7 +41,7 @@ export default function Sidebar() {
           
           <nav className="flex-1 px-3 space-y-1">
             {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
+              const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.name}
@@ -66,7 +67,14 @@ export default function Sidebar() {
         </div>
         
         <div className="flex-shrink-0 flex border-t border-slate-800 p-4">
-          <button className="flex items-center w-full px-3 py-2 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-red-400 transition-colors">
+          <button
+            onClick={() => {
+              localStorage.removeItem('admin-auth-storage');
+              localStorage.removeItem('admin_token');
+              window.location.href = '/admin/login';
+            }}
+            className="flex items-center w-full px-3 py-2 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-red-400 transition-colors"
+          >
             <LogOut className="mr-3 h-5 w-5" />
             Sign Out
           </button>

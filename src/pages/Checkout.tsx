@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'motion/react';
 import { MapPin, CreditCard, ArrowLeft, Loader2, CheckCircle2, Package } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { orderService } from '../services/order.service';
 import { Navbar } from '../components/Navbar';
 import { CartDrawer } from '../components/CartDrawer';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
 
 const addressSchema = z.object({
   street: z.string().min(3, 'Street address is required'),
@@ -21,6 +25,59 @@ const addressSchema = z.object({
 
 type AddressForm = z.infer<typeof addressSchema>;
 
+function PaymentForm({ orderId, orderNumber, onPaymentSuccess }: { orderId: string; orderNumber: string; onPaymentSuccess: (orderNumber: string) => void }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const handlePayment = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setIsProcessing(true);
+    setPaymentError(null);
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      redirect: 'if_required',
+    });
+
+    if (error) {
+      setPaymentError(error.message || 'Payment failed');
+      setIsProcessing(false);
+      return;
+    }
+
+    if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onPaymentSuccess(orderNumber);
+    } else {
+      setPaymentError('Payment was not successful. Please try again.');
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handlePayment} className="space-y-5">
+      <PaymentElement />
+      {paymentError && (
+        <p className="text-sm text-red-500 mt-2">{paymentError}</p>
+      )}
+      <button
+        type="submit"
+        disabled={!stripe || isProcessing}
+        className="w-full bg-primary hover:brightness-110 text-white font-bold py-4 rounded-2xl shadow-premium hover:shadow-premium-hover transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-70 text-sm uppercase tracking-widest"
+      >
+        {isProcessing ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          'Pay Now'
+        )}
+      </button>
+    </form>
+  );
+}
+
 export function Checkout() {
   const navigate = useNavigate();
   const { cart, clearCart, getCartTotal } = useCartStore();
@@ -28,7 +85,10 @@ export function Checkout() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
 
   const cartTotal = getCartTotal();
   const tax = cartTotal * 0.1;
@@ -96,7 +156,7 @@ export function Checkout() {
             </motion.div>
             <h2 className="text-4xl font-serif font-bold text-ink mb-3">Order Placed!</h2>
             <p className="text-ink/60 text-lg mb-2">Your order has been successfully placed.</p>
-            <p className="text-primary font-bold text-sm uppercase tracking-widest mb-8">Order #{orderSuccess}</p>
+            <p className="text-primary font-bold text-sm uppercase tracking-widest mb-8">Order #{orderNumber}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
                 onClick={() => navigate(`/orders`)}
@@ -136,10 +196,14 @@ export function Checkout() {
       });
 
       clearCart();
-      setOrderSuccess(order.orderNumber);
+      setCreatedOrderId(order._id);
+      setOrderNumber(order.orderNumber);
+
+      const paymentData = await orderService.createPaymentIntent(order._id);
+      setClientSecret(paymentData.clientSecret);
+      setIsSubmitting(false);
     } catch (err: any) {
       setError(err.message || 'Failed to place order');
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -172,73 +236,77 @@ export function Checkout() {
           )}
 
           <div className="grid lg:grid-cols-5 gap-10">
-            {/* Delivery Address Form */}
             <div className="lg:col-span-3">
               <div className="bg-white rounded-3xl shadow-premium p-8 ring-1 ring-gray-100">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
                     <MapPin className="w-5 h-5 text-primary" />
                   </div>
-                  <h2 className="text-xl font-serif font-bold text-ink">Delivery Address</h2>
+                  <h2 className="text-xl font-serif font-bold text-ink">{clientSecret ? 'Card Payment' : 'Delivery Address'}</h2>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} id="checkout-form" className="space-y-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-ink/70 ml-1">Street Address</label>
-                    <input 
-                      {...register('street')}
-                      placeholder="123 Main Street, Apt 4B"
-                      className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.street ? 'ring-2 ring-red-500/20' : ''}`}
-                    />
-                    {errors.street && <p className="text-xs text-red-500 ml-1">{errors.street.message}</p>}
-                  </div>
+                {clientSecret ? (
+                  <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    <PaymentForm orderId={createdOrderId!} orderNumber={orderNumber!} onPaymentSuccess={() => setOrderSuccess(true)} />
+                  </Elements>
+                ) : (
+                  <form onSubmit={handleSubmit(onSubmit)} id="checkout-form" className="space-y-5">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-ink/70 ml-1">Street Address</label>
+                      <input 
+                        {...register('street')}
+                        placeholder="123 Main Street, Apt 4B"
+                        className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.street ? 'ring-2 ring-red-500/20' : ''}`}
+                      />
+                      {errors.street && <p className="text-xs text-red-500 ml-1">{errors.street.message}</p>}
+                    </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-ink/70 ml-1">City</label>
-                      <input 
-                        {...register('city')}
-                        placeholder="New York"
-                        className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.city ? 'ring-2 ring-red-500/20' : ''}`}
-                      />
-                      {errors.city && <p className="text-xs text-red-500 ml-1">{errors.city.message}</p>}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-ink/70 ml-1">City</label>
+                        <input 
+                          {...register('city')}
+                          placeholder="New York"
+                          className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.city ? 'ring-2 ring-red-500/20' : ''}`}
+                        />
+                        {errors.city && <p className="text-xs text-red-500 ml-1">{errors.city.message}</p>}
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-ink/70 ml-1">State</label>
+                        <input 
+                          {...register('state')}
+                          placeholder="NY"
+                          className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.state ? 'ring-2 ring-red-500/20' : ''}`}
+                        />
+                        {errors.state && <p className="text-xs text-red-500 ml-1">{errors.state.message}</p>}
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-ink/70 ml-1">State</label>
-                      <input 
-                        {...register('state')}
-                        placeholder="NY"
-                        className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.state ? 'ring-2 ring-red-500/20' : ''}`}
-                      />
-                      {errors.state && <p className="text-xs text-red-500 ml-1">{errors.state.message}</p>}
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-ink/70 ml-1">Zip Code</label>
-                      <input 
-                        {...register('zipCode')}
-                        placeholder="10001"
-                        className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.zipCode ? 'ring-2 ring-red-500/20' : ''}`}
-                      />
-                      {errors.zipCode && <p className="text-xs text-red-500 ml-1">{errors.zipCode.message}</p>}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-ink/70 ml-1">Zip Code</label>
+                        <input 
+                          {...register('zipCode')}
+                          placeholder="10001"
+                          className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.zipCode ? 'ring-2 ring-red-500/20' : ''}`}
+                        />
+                        {errors.zipCode && <p className="text-xs text-red-500 ml-1">{errors.zipCode.message}</p>}
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-ink/70 ml-1">Country</label>
+                        <input 
+                          {...register('country')}
+                          placeholder="US"
+                          className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.country ? 'ring-2 ring-red-500/20' : ''}`}
+                        />
+                        {errors.country && <p className="text-xs text-red-500 ml-1">{errors.country.message}</p>}
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-ink/70 ml-1">Country</label>
-                      <input 
-                        {...register('country')}
-                        placeholder="US"
-                        className={`w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 transition-all outline-none text-ink font-medium ${errors.country ? 'ring-2 ring-red-500/20' : ''}`}
-                      />
-                      {errors.country && <p className="text-xs text-red-500 ml-1">{errors.country.message}</p>}
-                    </div>
-                  </div>
-                </form>
+                  </form>
+                )}
               </div>
             </div>
 
-            {/* Order Summary Sidebar */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-3xl shadow-premium p-8 ring-1 ring-gray-100 sticky top-28">
                 <div className="flex items-center gap-3 mb-8">
@@ -284,18 +352,20 @@ export function Checkout() {
                   </div>
                 </div>
 
-                <button 
-                  type="submit"
-                  form="checkout-form"
-                  disabled={isSubmitting}
-                  className="w-full bg-primary hover:brightness-110 text-white font-bold py-4 rounded-2xl shadow-premium hover:shadow-premium-hover hover:-translate-y-0.5 transition-all mt-8 flex items-center justify-center gap-2 disabled:opacity-70 text-sm uppercase tracking-widest"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    'Place Order'
-                  )}
-                </button>
+                {!clientSecret && (
+                  <button 
+                    type="submit"
+                    form="checkout-form"
+                    disabled={isSubmitting}
+                    className="w-full bg-primary hover:brightness-110 text-white font-bold py-4 rounded-2xl shadow-premium hover:shadow-premium-hover hover:-translate-y-0.5 transition-all mt-8 flex items-center justify-center gap-2 disabled:opacity-70 text-sm uppercase tracking-widest"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      'Continue to Payment'
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -15,7 +15,7 @@ function App() {
   const hasAccess = isAuthenticated && (isAdmin || isChef);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/admin">
       <Routes>
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
         

@@ -1,8 +1,9 @@
 import { Queue, Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
+import { env } from '../config/env';
 import logger from '../utils/logger';
 
-const isRedisDisabled = process.env.DISABLE_REDIS === 'true';
+const isRedisDisabled = env.DISABLE_REDIS === 'true';
 
 let redisConnection: IORedis | null = null;
 let notificationQueue: Queue | null = null;

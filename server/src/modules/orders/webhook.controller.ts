@@ -19,18 +19,26 @@ export const handleStripeWebhook = asyncHandler(async (req: Request, res: Respon
     return;
   }
 
-  // Handle the event
-  switch (event.type) {
+  const eventType = event.type as string;
+
+  switch (eventType) {
     case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object as any;
-      await processSuccessfulPayment(paymentIntent);
+      await processSuccessfulPayment((event as any).data.object);
       break;
     case 'payment_intent.payment_failed':
-      const failedIntent = event.data.object as any;
-      await processFailedPayment(failedIntent);
+      await processFailedPayment((event as any).data.object);
+      break;
+    case 'charge.refunded':
+      await processChargeRefunded((event as any).data.object);
+      break;
+    case 'payment_intent.canceled':
+      await processFailedPayment((event as any).data.object);
+      break;
+    case 'charge.disputed.created':
+      await processDisputeCreated((event as any).data.object);
       break;
     default:
-      logger.info(`Unhandled event type ${event.type}`);
+      logger.info(`Unhandled event type ${eventType}`);
   }
 
   res.json({ received: true });
@@ -83,5 +91,33 @@ async function processFailedPayment(paymentIntent: any) {
     { gatewayTransactionId: paymentIntent.id },
     { status: TransactionStatus.FAILED }
   );
+  if (orderId) {
+    await Order.findByIdAndUpdate(orderId, { paymentStatus: PaymentStatus.FAILED });
+    socketService.emitOrderUpdate(paymentIntent.metadata.userId, orderId, 'PAYMENT_FAILED');
+  }
   logger.warn(`Payment failed for Order: ${orderId}`);
+}
+
+async function processChargeRefunded(charge: any) {
+  const paymentIntentId = charge.payment_intent as string;
+  const transaction = await Transaction.findOneAndUpdate(
+    { gatewayTransactionId: paymentIntentId },
+    { status: TransactionStatus.REFUNDED }
+  );
+
+  if (transaction) {
+    await Order.findByIdAndUpdate(transaction.order, { paymentStatus: PaymentStatus.PAID, orderStatus: 'REFUNDED' });
+    logger.info(`Refund processed for Order: ${transaction.order}`);
+  }
+}
+
+async function processDisputeCreated(charge: any) {
+  const paymentIntentId = charge.payment_intent as string;
+  const transaction = await Transaction.findOne({ gatewayTransactionId: paymentIntentId });
+
+  if (transaction) {
+    await Order.findByIdAndUpdate(transaction.order, { $set: { 'metadata.dispute': true } });
+    socketService.emitToAdmin('dispute_created', { orderId: transaction.order, chargeId: charge.id });
+    logger.warn(`Dispute created for Order: ${transaction.order}`);
+  }
 }

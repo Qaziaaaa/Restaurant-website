@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 export const createPaymentIntent = async (order: IOrder) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(order.pricingBreakdown.total * 100), // Stripe expects cents
+      amount: Math.round(order.pricingBreakdown.total * 100),
       currency: 'usd',
       metadata: {
         orderId: order._id.toString(),
@@ -18,7 +18,6 @@ export const createPaymentIntent = async (order: IOrder) => {
       },
     });
 
-    // Log the initial pending transaction
     await Transaction.create({
       order: order._id,
       user: order.user,
@@ -35,6 +34,33 @@ export const createPaymentIntent = async (order: IOrder) => {
   } catch (error) {
     logger.error('Stripe PaymentIntent creation failed:', error);
     throw new Error('Payment initialization failed');
+  }
+};
+
+export const createRefund = async (order: IOrder) => {
+  try {
+    const transaction = await Transaction.findOne({ order: order._id, status: TransactionStatus.SUCCESS });
+    if (!transaction) {
+      throw new Error('No successful payment found for this order');
+    }
+
+    const refund = await stripe.refunds.create({
+      payment_intent: transaction.gatewayTransactionId,
+    });
+
+    await Transaction.findOneAndUpdate(
+      { gatewayTransactionId: transaction.gatewayTransactionId },
+      { status: TransactionStatus.REFUNDED }
+    );
+
+    return {
+      refundId: refund.id,
+      amount: refund.amount / 100,
+      status: refund.status,
+    };
+  } catch (error) {
+    logger.error('Stripe refund creation failed:', error);
+    throw new Error('Refund processing failed');
   }
 };
 

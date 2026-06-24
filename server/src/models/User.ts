@@ -20,7 +20,12 @@ export interface IUser extends Document {
   passwordResetExpires?: Date;
   verificationToken?: string;
   isVerified: boolean;
+  loginAttempts: number;
+  lockUntil?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  isLocked(): boolean;
+  incrementLoginAttempts(): Promise<void>;
+  resetLoginAttempts(): Promise<void>;
 }
 
 const userSchema = new Schema<IUser>(
@@ -71,6 +76,14 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -92,6 +105,25 @@ userSchema.pre('save', async function () {
 userSchema.methods.comparePassword = async function (candidatePassword: string) {
   if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.methods.isLocked = function () {
+  if (!this.lockUntil) return false;
+  return this.lockUntil > new Date();
+};
+
+userSchema.methods.incrementLoginAttempts = async function () {
+  this.loginAttempts += 1;
+  if (this.loginAttempts >= 5) {
+    this.lockUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 min lockout
+  }
+  await this.save({ validateBeforeSave: false });
+};
+
+userSchema.methods.resetLoginAttempts = async function () {
+  this.loginAttempts = 0;
+  this.lockUntil = undefined;
+  await this.save({ validateBeforeSave: false });
 };
 
 export default mongoose.model<IUser>('User', userSchema);
